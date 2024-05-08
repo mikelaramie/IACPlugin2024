@@ -5,124 +5,26 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-    "os"
+	"os"
 )
-
-const (
-	SARIF_SCHEMA                = "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json"
-	SARIF_VERSION               = "2.1.0"
-	IAC_TOOL_DOCUMENTATION_LINK = ""
-	IAC_TOOL_NAME               = "analyze-code-security-scc"
-)
-
-type violation struct {
-	AssetID        string `json:"assetId"`
-	NextSteps      string `json:"nextSteps"`
-	PolicyID       string `json:"policyId"`
-	Severity       string `json:"severity"`
-	ViolatedAsset  asset  `json:"violatedAsset"`
-	ViolatedPolicy policy `json:"violatedPolicy"`
-}
-
-type asset struct {
-	Asset     string `json:"asset"`
-	AssetType string `json:"assetType"`
-}
-
-type policy struct {
-	Constraint     string `json:"constraint"`
-	ConstraintType string `json:"constraintType"`
-}
-
-type sarifOutput struct {
-	Schema  string     `json:"$schema"`
-	Version string     `json:"version"`
-	Runs    []sarifRun `json:"runs"`
-}
-
-type sarifRun struct {
-	Tool    tool          `json:"tool"`
-	Results []sarifResult `json:"results"`
-}
-
-type tool struct {
-	Driver driver `json:"driver"`
-}
-
-type driver struct {
-	Name           string `json:"name"`
-	Version        string `json:"version"`
-	InformationURI string `json:"informationUri"`
-	Rules          []rule `json:"rules"`
-}
-
-type sarifResult struct {
-	RuleID     string         `json:"ruleId"`
-	Message    message        `json:"message"`
-	Locations  []location     `json:"locations"`
-	Properties propertyResult `json:"properties"`
-}
-
-type propertyResult struct {
-	AssetID   string `json:"assetId"`
-	AssetType string `json:"assetType"`
-	Asset     string `json:"asset"`
-}
-
-type message struct {
-	text string `json:"text"`
-}
-
-type rule struct {
-	ID              string          `json:"id"`
-	FullDescription fullDescription `json:"fullDescription"`
-	Properties      propertyRule    `json:"properties"`
-}
-
-type propertyRule struct {
-	Severity            string   `json:"severity"`
-	PolicyType          string   `json:"policyType"`
-	ComplianceStandard  []string `json:"complianceStandard"`
-	PolicySet           string   `json:"policySet"`
-	Posture             string   `json:"posture"`
-	PostureRevisionID   string   `json:"postureRevisionId"`
-	PostureDeploymentID string   `json:"postureDeploymentId"`
-	Constraints         string   `json:"constraints"`
-	NextSteps           string   `json:"nextSteps"`
-}
-
-type fullDescription struct {
-	text string `json:"text"`
-}
-
-type location struct {
-	LogicalLocation []logicalLocation `json:"logicalLocation"`
-}
-
-type logicalLocation struct {
-	FullyQualifiedName []string `json:"fullyQualifiedName"`
-}
-
-type physicalLocation struct {
-	ArtifactLocation artifactLocation `json:"artifactLocation"`
-}
-
-type artifactLocation struct {
-	URI string `json:"uri"`
-}
 
 func main() {
-	
+	var violations struct {
+		Response struct {
+			IACValidationReport struct {
+				Violations []sarif.Violation `json:"violations"`
+			} `json:"iacValidationReport"`
+		} `json:"response"`
+	}
+
 	jsonFile, err := os.Open("input.json")
 	if err != nil {
 		fmt.Println("Error opening JSON file:", err)
 		return
 	}
 	defer jsonFile.Close()
-
 	byteValue, _ := ioutil.ReadAll(jsonFile)
 
-	var violations []violation
 	err = json.Unmarshal(byteValue, &violations)
 	if err != nil {
 		fmt.Println("Error decoding JSON:", err)
@@ -130,33 +32,33 @@ func main() {
 	}
 
 	// Convert to SARIF format
-	var sarifOutput sarifOutput
-	sarifOutput.Schema = SARIF_SCHEMA
-	sarifOutput.Version = SARIF_VERSION
+	var sarifOutput sarif.SarifOutput
+	sarifOutput.Schema = constants.SARIF_SCHEMA
+	sarifOutput.Version = constants.SARIF_VERSION
 
-	var sarifRuns []sarifRun
-	var sarifResults []sarifResult
-	var sarifRules []rule
+	var sarifRuns []sarif.SarifRun
+	var sarifResults []sarif.SarifResult
+	var sarifRules []sarif.Rule
 
 	for _, v := range violations.Response.IACValidationReport.Violations {
-		var sarifResult sarifResult
-		var sarifRule rule
-		var location location
-		var logicalLocation logicalLocation
+		var sarifResult sarif.SarifResult
+		var sarifRule sarif.Rule
+		var location sarif.Location
+		var logicalLocation sarif.LogicalLocation
 		sarifResult.RuleID = v.PolicyID
-		sarifResult.Message.text = fmt.Sprintf("Asset type: %s has a violation, next steps: %s", v.AssetID, v.NextSteps)
+		sarifResult.Message.Text = fmt.Sprintf("Asset type: %s has a violation, next steps: %s", v.AssetID, v.NextSteps)
 		logicalLocation.FullyQualifiedName = []string{v.AssetID}
 		location.LogicalLocation = append(location.LogicalLocation, logicalLocation)
 		sarifResult.Locations = append(sarifResult.Locations, location)
-		sarifResult.Properties = propertyResult{
+		sarifResult.Properties = sarif.PropertyResult{
 			AssetID:   v.AssetID,
 			AssetType: v.ViolatedAsset.AssetType,
 			Asset:     v.ViolatedAsset.Asset,
 		}
 
 		sarifRule.ID = v.PolicyID
-		sarifRule.FullDescription = fullDescription{text: v.ViolatedPolicy.Constraint}
-		sarifRule.Properties = propertyRule{
+		sarifRule.FullDescription = sarif.FullDescription{Text: v.ViolatedPolicy.Constraint}
+		sarifRule.Properties = sarif.PropertyRule{
 			Severity:   v.Severity,
 			PolicyType: v.ViolatedPolicy.ConstraintType,
 			// ComplianceStandard:  []string{"STANDARD"},
@@ -172,10 +74,10 @@ func main() {
 		sarifResults = append(sarifResults, sarifResult)
 	}
 
-	var sarifRun sarifRun
-	sarifRun.Tool.Driver.InformationURI = IAC_TOOL_DOCUMENTATION_LINK
-	sarifRun.Tool.Driver.Name = IAC_TOOL_NAME
-	sarifRun.Tool.Driver.Version = SARIF_VERSION
+	var sarifRun sarif.SarifRun
+	sarifRun.Tool.Driver.InformationURI = constants.IAC_TOOL_DOCUMENTATION_LINK
+	sarifRun.Tool.Driver.Name = constants.IAC_TOOL_NAME
+	sarifRun.Tool.Driver.Version = constants.SARIF_VERSION
 	sarifRun.Tool.Driver.Rules = sarifRules
 	sarifRun.Results = sarifResults
 	sarifRuns = append(sarifRuns, sarifRun)
