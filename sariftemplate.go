@@ -1,4 +1,4 @@
-package utils
+package sarif
 
 type Violation struct {
 	AssetID        string `json:"assetId"`
