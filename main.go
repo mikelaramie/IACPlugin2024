@@ -6,6 +6,9 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+
+	"IACPlugin/constants"
+	"IACPlugin/sarif"
 )
 
 func main() {
