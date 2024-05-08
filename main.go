@@ -7,8 +7,8 @@ import (
 	"io/ioutil"
 	"os"
 
-	"IACPlugin/constants"
-	"IACPlugin/sarif"
+	"github.com/pritiprajapati314/IACPlugin2024/constants"
+	"github.com/pritiprajapati314/IACPlugin2024/sarif"
 )
 
 func main() {
