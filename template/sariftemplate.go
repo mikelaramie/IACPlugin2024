@@ -1,4 +1,4 @@
-package utils
+package template
 
 type Violation struct {
 	AssetID        string `json:"assetId"`
