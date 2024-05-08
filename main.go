@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"os"
 
+	sarif "github.com/pritiprajapati314/IACPlugin2024/sarif"
 	constants "github.com/pritiprajapati314/IACPlugin2024/utils"
 )
 
