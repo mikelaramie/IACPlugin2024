@@ -1,0 +1,51 @@
+{
+    "response": {
+        "iacValidationReport": {
+            "note": "IaC validation is limited to certain asset types and policies. For information about supported asset types and policies for IaC validation, see https://cloud.google.com/security-command-center/docs/supported-iac-assets-policies.",
+            "violations": [
+                {
+                    "assetId": "//run.googleapis.com/projects/iac-scan-integration-test/locations/us-east1/services/bad-cr",
+                    "nextSteps": "Ensure that Cloud Run services comply with the allowed VPC egress settings specified in this constraint. Use Serverless VPC Access or enable Direct VPC egress, and ensure that VPC egress settings are set to either private-ranges-only or all-traffic.",
+                    "policyId": "projects/251902844862/policies/run.allowedVPCEgress",
+                    "severity": "HIGH",
+                    "violatedAsset": {
+                        "asset": "resource:{version:\"v1\" discovery_document_uri:\"https://www.googleapis.com/discovery/v1/apis/run/v1/rest\" discovery_name:\"Service\" parent:\"projects/iac-scan-integration-test\" data:{fields:{key:\"apiVersion\" value:{string_value:\"serving.knative.dev/v1\"}} fields:{key:\"kind\" value:{string_value:\"Service\"}} fields:{key:\"metadata\" value:{struct_value:{fields:{key:\"annotations\" value:{struct_value:{fields:{key:\"run.googleapis.com/vpc-access-egress\" value:{string_value:\"all-traffic\"}}}}} fields:{key:\"name\" value:{string_value:\"bad-cr\"}}}}}}}",
+                        "assetType": "run.googleapis.com/Service"
+                    },
+                    "violatedPolicy": {
+                        "constraint": "org_policy_canned_constraint:{name:\"projects/251902844862/policies/run.allowedVPCEgress\" rules:{deny_all:true}}",
+                        "constraintType": "ORG_POLICY"
+                    }
+                },
+                {
+                    "assetId": "//run.googleapis.com/projects/iac-scan-integration-test/locations/us-east1/services/good-cr",
+                    "nextSteps": "Ensure that Cloud Run services comply with the allowed VPC egress settings specified in this constraint. Use Serverless VPC Access or enable Direct VPC egress, and ensure that VPC egress settings are set to either private-ranges-only or all-traffic.",
+                    "policyId": "projects/251902844862/policies/run.allowedVPCEgress",
+                    "severity": "HIGH",
+                    "violatedAsset": {
+                        "asset": "resource:{version:\"v1\" discovery_document_uri:\"https://www.googleapis.com/discovery/v1/apis/run/v1/rest\" discovery_name:\"Service\" parent:\"projects/iac-scan-integration-test\" data:{fields:{key:\"apiVersion\" value:{string_value:\"serving.knative.dev/v1\"}} fields:{key:\"kind\" value:{string_value:\"Service\"}} fields:{key:\"metadata\" value:{struct_value:{fields:{key:\"annotations\" value:{struct_value:{fields:{key:\"run.googleapis.com/vpc-access-egress\" value:{string_value:\"private-ranges-only\"}}}}} fields:{key:\"name\" value:{string_value:\"good-cr\"}}}}}}}",
+                        "assetType": "run.googleapis.com/Service"
+                    },
+                    "violatedPolicy": {
+                        "constraint": "org_policy_canned_constraint:{name:\"projects/251902844862/policies/run.allowedVPCEgress\" rules:{deny_all:true}}",
+                        "constraintType": "ORG_POLICY"
+                    }
+                },
+                {
+                    "assetId": "//run.googleapis.com/projects/iac-scan-integration-test/locations/us-east1/services/bad-cr",
+                    "nextSteps": "Ensure that Cloud Run services comply with the allowed VPC egress settings specified in this constraint. Use Serverless VPC Access or enable Direct VPC egress, and ensure that VPC egress settings are set to either private-ranges-only or all-traffic.",
+                    "policyId": "projects/251902844862/policies/run.allowedVPCEgress",
+                    "severity": "CRITICAL",
+                    "violatedAsset": {
+                        "asset": "resource:{version:\"v1\" discovery_document_uri:\"https://www.googleapis.com/discovery/v1/apis/run/v1/rest\" discovery_name:\"Service\" parent:\"projects/iac-scan-integration-test\" data:{fields:{key:\"apiVersion\" value:{string_value:\"serving.knative.dev/v1\"}} fields:{key:\"kind\" value:{string_value:\"Service\"}} fields:{key:\"metadata\" value:{struct_value:{fields:{key:\"annotations\" value:{struct_value:{fields:{key:\"run.googleapis.com/vpc-access-egress\" value:{string_value:\"all-traffic\"}}}}} fields:{key:\"name\" value:{string_value:\"bad-cr\"}}}}}}}",
+                        "assetType": "run.googleapis.com/Service"
+                    },
+                    "violatedPolicy": {
+                        "constraint": "org_policy_canned_constraint:{name:\"projects/251902844862/policies/run.allowedVPCEgress\" rules:{deny_all:true}}",
+                        "constraintType": "ORG_POLICY"
+                    }
+                }
+            ]
+        }
+    }
+}

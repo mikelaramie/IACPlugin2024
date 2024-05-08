@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-    "log"
     "os"
 )
 
@@ -113,32 +112,18 @@ type artifactLocation struct {
 }
 
 func main() {
-	jsonData, err := os.Open("input.json")
+	
+	jsonFile, err := os.Open("input.json")
 	if err != nil {
-			log.Fatal(err)
+		fmt.Println("Error opening JSON file:", err)
+		return
 	}
-	defer file.Close()
+	defer jsonFile.Close()
 
-	// Read the file contents
-	data, err := ioutil.ReadAll(jsonData)
-	if err != nil {
-			log.Fatal(err)
-	}
+	byteValue, _ := ioutil.ReadAll(jsonFile)
 
-	// Decode the JSON data
-	var jsonData map[string]interface{}
-	if err := json.Unmarshal(data, &jsonData); err != nil {
-			log.Fatal(err)
-	}
-	var violations struct {
-		Response struct {
-			IACValidationReport struct {
-				Violations []violation `json:"violations"`
-			} `json:"iacValidationReport"`
-		} `json:"response"`
-	}
-
-	err := json.Unmarshal([]byte(jsonData), &violations)
+	var violations []violation
+	err = json.Unmarshal(byteValue, &violations)
 	if err != nil {
 		fmt.Println("Error decoding JSON:", err)
 		return
