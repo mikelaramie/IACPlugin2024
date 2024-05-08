@@ -7,7 +7,7 @@ import (
 	"io/ioutil"
 	"os"
 
-	sarif "github.com/pritiprajapati314/IACPlugin2024/sarif"
+	sariftemplate "github.com/pritiprajapati314/IACPlugin2024/template"
 	constants "github.com/pritiprajapati314/IACPlugin2024/utils"
 )
 
@@ -15,7 +15,7 @@ func main() {
 	var violations struct {
 		Response struct {
 			IACValidationReport struct {
-				Violations []sarif.Violation `json:"violations"`
+				Violations []sariftemplate.Violation `json:"violations"`
 			} `json:"iacValidationReport"`
 		} `json:"response"`
 	}
@@ -35,33 +35,33 @@ func main() {
 	}
 
 	// Convert to SARIF format
-	var sarifOutput sarif.SarifOutput
+	var sarifOutput sariftemplate.SarifOutput
 	sarifOutput.Schema = constants.SARIF_SCHEMA
 	sarifOutput.Version = constants.SARIF_VERSION
 
-	var sarifRuns []sarif.SarifRun
-	var sarifResults []sarif.SarifResult
-	var sarifRules []sarif.Rule
+	var sarifRuns []sariftemplate.SarifRun
+	var sarifResults []sariftemplate.SarifResult
+	var sarifRules []sariftemplate.Rule
 
 	for _, v := range violations.Response.IACValidationReport.Violations {
-		var sarifResult sarif.SarifResult
-		var sarifRule sarif.Rule
-		var location sarif.Location
-		var logicalLocation sarif.LogicalLocation
+		var sarifResult sariftemplate.SarifResult
+		var sarifRule sariftemplate.Rule
+		var location sariftemplate.Location
+		var logicalLocation sariftemplate.LogicalLocation
 		sarifResult.RuleID = v.PolicyID
 		sarifResult.Message.Text = fmt.Sprintf("Asset type: %s has a violation, next steps: %s", v.AssetID, v.NextSteps)
 		logicalLocation.FullyQualifiedName = []string{v.AssetID}
 		location.LogicalLocation = append(location.LogicalLocation, logicalLocation)
 		sarifResult.Locations = append(sarifResult.Locations, location)
-		sarifResult.Properties = sarif.PropertyResult{
+		sarifResult.Properties = sariftemplate.PropertyResult{
 			AssetID:   v.AssetID,
 			AssetType: v.ViolatedAsset.AssetType,
 			Asset:     v.ViolatedAsset.Asset,
 		}
 
 		sarifRule.ID = v.PolicyID
-		sarifRule.FullDescription = sarif.FullDescription{Text: v.ViolatedPolicy.Constraint}
-		sarifRule.Properties = sarif.PropertyRule{
+		sarifRule.FullDescription = sariftemplate.FullDescription{Text: v.ViolatedPolicy.Constraint}
+		sarifRule.Properties = sariftemplate.PropertyRule{
 			Severity:   v.Severity,
 			PolicyType: v.ViolatedPolicy.ConstraintType,
 			// ComplianceStandard:  []string{"STANDARD"},
@@ -77,7 +77,7 @@ func main() {
 		sarifResults = append(sarifResults, sarifResult)
 	}
 
-	var sarifRun sarif.SarifRun
+	var sarifRun sariftemplate.SarifRun
 	sarifRun.Tool.Driver.InformationURI = constants.IAC_TOOL_DOCUMENTATION_LINK
 	sarifRun.Tool.Driver.Name = constants.IAC_TOOL_NAME
 	sarifRun.Tool.Driver.Version = constants.SARIF_VERSION
