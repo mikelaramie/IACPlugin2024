@@ -2,9 +2,9 @@
 package main
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
 
 	sariftemplate "github.com/pritiprajapati314/IACPlugin2024/template"
@@ -20,13 +20,23 @@ func main() {
 		} `json:"response"`
 	}
 
-	jsonFile, err := os.Open("input.json")
-	if err != nil {
-		fmt.Println("Error opening JSON file:", err)
+	// jsonFile, err := os.Args[1]
+	// if err != nil {
+	// 	fmt.Println("Error opening JSON file:", err)
+	// 	return
+	// }
+	// defer jsonFile.Close()
+	// byteValue, _ := ioutil.ReadAll(jsonFile)
+
+	scanner := bufio.NewScanner(os.Stdin)
+	var inputData []byte
+	for scanner.Scan() {
+		inputData = append(inputData, scanner.Bytes()...)
+	}
+	if err := scanner.Err(); err != nil {
+		fmt.Println("Error reading from stdin:", err)
 		return
 	}
-	defer jsonFile.Close()
-	byteValue, _ := ioutil.ReadAll(jsonFile)
 
 	err = json.Unmarshal(byteValue, &violations)
 	if err != nil {
