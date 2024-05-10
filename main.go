@@ -38,7 +38,7 @@ func main() {
 		return
 	}
 
-	err = json.Unmarshal(byteValue, &violations)
+	err := json.Unmarshal(inputData, &violations)
 	if err != nil {
 		fmt.Println("Error decoding JSON:", err)
 		return
