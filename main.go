@@ -29,6 +29,7 @@ func main() {
 	// byteValue, _ := ioutil.ReadAll(jsonFile)
 
 	scanner := bufio.NewScanner(os.Stdin)
+	fmt.Println("Scanner scanned %v", scanner)
 	var inputData []byte
 	for scanner.Scan() {
 		inputData = append(inputData, scanner.Bytes()...)
@@ -37,6 +38,8 @@ func main() {
 		fmt.Println("Error reading from stdin:", err)
 		return
 	}
+
+	fmt.Println("The resulting inputData is %v", inputData)
 
 	err := json.Unmarshal(inputData, &violations)
 	if err != nil {
