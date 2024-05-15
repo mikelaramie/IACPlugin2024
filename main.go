@@ -52,7 +52,7 @@ func main() {
 
 	fmt.Println("The resulting inputData is %v", inputData)
 
-	err := json.Unmarshal(inputData, &violations)
+	err = json.Unmarshal(inputData, &violations)
 	if err != nil {
 		fmt.Println("Error decoding JSON:", err)
 		return
