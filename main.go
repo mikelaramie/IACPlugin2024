@@ -4,6 +4,7 @@ package main
 import (
 	"bufio"
 	"encoding/json"
+	"flag"
 	"fmt"
 	"os"
 
@@ -27,6 +28,16 @@ func main() {
 	// }
 	// defer jsonFile.Close()
 	// byteValue, _ := ioutil.ReadAll(jsonFile)
+
+	filePath := flag.String("filePath", "", "path of the json report")
+	flag.Parse()
+
+	data, err := os.ReadFile(*filePath)
+	if err != nil {
+		fmt.Printf("os.ReadFile(%s): %v\n", *filePath, err)
+		os.Exit(1)
+	}
+	fmt.Println(string(data))
 
 	scanner := bufio.NewScanner(os.Stdin)
 	fmt.Println("Scanner scanned %v", scanner)
