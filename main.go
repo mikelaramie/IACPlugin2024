@@ -37,7 +37,7 @@ func main() {
 		fmt.Printf("os.ReadFile(%s): %v\n", *filePath, err)
 		os.Exit(1)
 	}
-	fmt.Println(string(data))
+	fmt.Printf("inside the code: %v", string(data))
 
 	scanner := bufio.NewScanner(os.Stdin)
 	fmt.Println("Scanner scanned %v", scanner)
