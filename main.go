@@ -2,7 +2,6 @@
 package main
 
 import (
-	"bufio"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -39,20 +38,20 @@ func main() {
 	}
 	fmt.Printf("inside the code: %v", string(data))
 
-	scanner := bufio.NewScanner(os.Stdin)
-	fmt.Println("Scanner scanned %v", scanner)
-	var inputData []byte
-	for scanner.Scan() {
-		inputData = append(inputData, scanner.Bytes()...)
-	}
-	if err := scanner.Err(); err != nil {
-		fmt.Println("Error reading from stdin:", err)
-		return
-	}
+	// scanner := bufio.NewScanner(os.Stdin)
+	// fmt.Println("Scanner scanned %v", scanner)
+	// var inputData []byte
+	// for scanner.Scan() {
+	// 	inputData = append(inputData, scanner.Bytes()...)
+	// }
+	// if err := scanner.Err(); err != nil {
+	// 	fmt.Println("Error reading from stdin:", err)
+	// 	return
+	// }
 
-	fmt.Println("The resulting inputData is %v", inputData)
+	// fmt.Println("The resulting inputData is %v", inputData)
 
-	err = json.Unmarshal(inputData, &violations)
+	err = json.Unmarshal(data, &violations)
 	if err != nil {
 		fmt.Println("Error decoding JSON:", err)
 		return
