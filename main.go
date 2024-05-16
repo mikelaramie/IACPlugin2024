@@ -20,14 +20,6 @@ func main() {
 		} `json:"response"`
 	}
 
-	// jsonFile, err := os.Args[1]
-	// if err != nil {
-	// 	fmt.Println("Error opening JSON file:", err)
-	// 	return
-	// }
-	// defer jsonFile.Close()
-	// byteValue, _ := ioutil.ReadAll(jsonFile)
-
 	filePath := flag.String("filePath", "", "path of the json report")
 	flag.Parse()
 
@@ -37,19 +29,6 @@ func main() {
 		os.Exit(1)
 	}
 	fmt.Printf("inside the code: %v", string(data))
-
-	// scanner := bufio.NewScanner(os.Stdin)
-	// fmt.Println("Scanner scanned %v", scanner)
-	// var inputData []byte
-	// for scanner.Scan() {
-	// 	inputData = append(inputData, scanner.Bytes()...)
-	// }
-	// if err := scanner.Err(); err != nil {
-	// 	fmt.Println("Error reading from stdin:", err)
-	// 	return
-	// }
-
-	// fmt.Println("The resulting inputData is %v", inputData)
 
 	err = json.Unmarshal(data, &violations)
 	if err != nil {
