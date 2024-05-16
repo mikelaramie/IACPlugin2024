@@ -20,7 +20,7 @@ func main() {
 		} `json:"response"`
 	}
 
-	filePath := flag.String("filePath", "", "path of the json report")
+	filePath := flag.String("filePath", "", "path of the json file")
 	flag.Parse()
 
 	data, err := os.ReadFile(*filePath)
@@ -28,7 +28,6 @@ func main() {
 		fmt.Printf("os.ReadFile(%s): %v\n", *filePath, err)
 		os.Exit(1)
 	}
-	fmt.Printf("inside the code: %v", string(data))
 
 	err = json.Unmarshal(data, &violations)
 	if err != nil {
@@ -98,6 +97,4 @@ func main() {
 
 	// Write SARIF JSON to file
 	fmt.Println(string(sarifJSON))
-
-	fmt.Println("Conversion successful. SARIF file generated: output.sarif")
 }
