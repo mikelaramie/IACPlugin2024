@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"os"
 
 	sariftemplate "github.com/pritiprajapati314/IACPlugin2024/template"
@@ -22,6 +23,8 @@ func main() {
 
 	filePath := flag.String("filePath", "", "path of the json file")
 	flag.Parse()
+
+	output := flag.Strign("output")
 
 	data, err := os.ReadFile(*filePath)
 	if err != nil {
@@ -94,6 +97,15 @@ func main() {
 		fmt.Println("Error marshalling SARIF:", err)
 		return
 	}
+
+	outputFilePath := "output.json"
+	err = ioutil.WriteFile(outputFilePath, sarifJSON, 0644)
+	if err != nil {
+		fmt.Println("Error writing SARIF JSON:", err)
+		return
+	}
+
+	fmt.Println("SARIF JSON file generated:", outputFilePath)
 
 	// Write SARIF JSON to file
 	fmt.Println(string(sarifJSON))
