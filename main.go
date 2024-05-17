@@ -109,6 +109,4 @@ func main() {
 		fmt.Println("Error writing SARIF JSON to file:", err)
 		return
 	}
-
-	fmt.Println("SARIF JSON written to", *outputFilePath)
 }
