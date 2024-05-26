@@ -1,33 +1,15 @@
 package template
 
-type Violation struct {
-	AssetID        string `json:"assetId"`
-	NextSteps      string `json:"nextSteps"`
-	PolicyID       string `json:"policyId"`
-	Severity       string `json:"severity"`
-	ViolatedAsset  Asset  `json:"violatedAsset"`
-	ViolatedPolicy Policy `json:"violatedPolicy"`
-}
-
-type Asset struct {
-	Asset     string `json:"asset"`
-	AssetType string `json:"assetType"`
-}
-
-type Policy struct {
-	Constraint     string `json:"constraint"`
-	ConstraintType string `json:"constraintType"`
-}
-
 type SarifOutput struct {
-	Schema  string     `json:"$schema"`
-	Version string     `json:"version"`
-	Runs    []SarifRun `json:"runs"`
+	Version string `json:"version"`
+	Schema  string `json:"$schema"`
+	Runs    []Run  `json:"runs"`
 }
 
-type SarifRun struct {
-	Tool    Tool          `json:"tool"`
-	Results []SarifResult `json:"results"`
+type Run struct {
+	Note    string   `json:"note"`
+	Tool    Tool     `json:"tool"`
+	Results []Result `json:"results"`
 }
 
 type Tool struct {
@@ -41,30 +23,17 @@ type Driver struct {
 	Rules          []Rule `json:"rules"`
 }
 
-type SarifResult struct {
-	RuleID     string         `json:"ruleId"`
-	Message    Message        `json:"message"`
-	Locations  []Location     `json:"locations"`
-	Properties PropertyResult `json:"properties"`
-}
-
-type PropertyResult struct {
-	AssetID   string `json:"assetId"`
-	AssetType string `json:"assetType"`
-	Asset     string `json:"asset"`
-}
-
-type Message struct {
-	Text string `json:"text"`
-}
-
 type Rule struct {
 	ID              string          `json:"id"`
 	FullDescription FullDescription `json:"fullDescription"`
-	Properties      PropertyRule    `json:"properties"`
+	Properties      RuleProperties  `json:"properties"`
 }
 
-type PropertyRule struct {
+type FullDescription struct {
+	Text string `json:"text"`
+}
+
+type RuleProperties struct {
 	Severity            string   `json:"severity"`
 	PolicyType          string   `json:"policyType"`
 	ComplianceStandard  []string `json:"complianceStandard"`
@@ -76,22 +45,27 @@ type PropertyRule struct {
 	NextSteps           string   `json:"nextSteps"`
 }
 
-type FullDescription struct {
+type Result struct {
+	RuleID     string           `json:"ruleId"`
+	Message    Message          `json:"message"`
+	Locations  []Location       `json:"locations"`
+	Properties ResultProperties `json:"properties"`
+}
+
+type Message struct {
 	Text string `json:"text"`
 }
 
 type Location struct {
-	LogicalLocation []LogicalLocation `json:"logicalLocation"`
+	LogicalLocations []LogicalLocation `json:"logicalLocation"`
 }
 
 type LogicalLocation struct {
-	FullyQualifiedName []string `json:"fullyQualifiedName"`
+	FullyQualifiedName string `json:"fullyQualifiedName"`
 }
 
-type physicalLocation struct {
-	ArtifactLocation ArtifactLocation `json:"artifactLocation"`
-}
-
-type ArtifactLocation struct {
-	URI string `json:"uri"`
+type ResultProperties struct {
+	AssetID   string `json:"assetId"`
+	AssetType string `json:"assetType"`
+	Asset     string `json:"asset"`
 }

@@ -3,112 +3,157 @@ package main
 
 import (
 	"encoding/json"
-	"flag"
 	"fmt"
 	"os"
 
-	sariftemplate "github.com/pritiprajapati314/IACPlugin2024/template"
-	constants "github.com/pritiprajapati314/IACPlugin2024/utils"
+	"google3/base/go/flag"
+
+	iacTemplate "google3/experimental/CertifiedOSS/JsonToSarif/iacTemplate"
+	sariftemplate "google3/experimental/CertifiedOSS/JsonToSarif/template"
+	constants "google3/experimental/CertifiedOSS/JsonToSarif/utils"
+)
+
+var (
+	inputFilePath  = flag.String("input", "input.json", "path of the input file")
+	outputFilePath = flag.String("output", "output.json", "path of the output file")
 )
 
 func main() {
-	var violations struct {
-		Response struct {
-			IACValidationReport struct {
-				Violations []sariftemplate.Violation `json:"violations"`
-			} `json:"iacValidationReport"`
-		} `json:"response"`
+	flag.Parse()
+
+	iacReport, err := fetchIACScanReport(inputFilePath)
+	if err != nil {
+		fmt.Println("Error fetching IAC scan report:", err)
+		return
 	}
 
-	filePath := flag.String("filePath", "", "path of the json file")
-	outputFilePath := flag.String("output", "output.json", "path of the output file") // Added output file flag
-	flag.Parse()
+	sarifReport := generateSarifReport(iacReport.Response.IacValidationReport)
+
+	convertSarifReportToJSONandWriteToOutputFile(sarifReport)
+}
+
+func fetchIACScanReport(filePath *string) (iacTemplate.IACReportTemplate, error) {
+	var iacReport iacTemplate.IACReportTemplate
 
 	data, err := os.ReadFile(*filePath)
 	if err != nil {
-		fmt.Printf("os.ReadFile(%s): %v\n", *filePath, err)
-		os.Exit(1)
+		return iacTemplate.IACReportTemplate{}, fmt.Errorf("os.ReadFile(%s): %v", *filePath, err)
 	}
 
-	err = json.Unmarshal(data, &violations)
-	if err != nil {
-		fmt.Println("Error decoding JSON:", err)
-		return
+	if err = json.Unmarshal(data, &iacReport); err != nil {
+		return iacTemplate.IACReportTemplate{}, fmt.Errorf("Error decoding JSON: %v", err)
 	}
 
-	// Convert to SARIF format
-	var sarifOutput sariftemplate.SarifOutput
-	sarifOutput.Schema = constants.SARIF_SCHEMA
-	sarifOutput.Version = constants.SARIF_VERSION
+	return iacReport, nil
+}
 
-	var sarifRuns []sariftemplate.SarifRun
-	var sarifResults []sariftemplate.SarifResult
-	var sarifRules []sariftemplate.Rule
+func generateSarifReport(report iacTemplate.IACValidationReport) sariftemplate.SarifOutput {
+	policyToViolationMap := getUniqueViolations(report.Violations)
+	rules := constructRules(policyToViolationMap)
+	results := constructResults(report.Violations)
+	sarifReport := sariftemplate.SarifOutput{
+		Version: constants.SARIF_VERSION,
+		Schema:  constants.SARIF_SCHEMA,
+		Runs: []sariftemplate.Run{
+			{
+				Note: report.Note,
+				Tool: sariftemplate.Tool{
+					Driver: sariftemplate.Driver{
+						Name:           constants.IAC_TOOL_NAME,
+						Version:        "*******INCORRECT NEEDS TO BE CORRECTED*******",
+						InformationURI: constants.IAC_TOOL_DOCUMENTATION_LINK,
+						Rules:          rules,
+					},
+				},
+				Results: results,
+			},
+		},
+	}
+	return sarifReport
+}
 
-	for _, v := range violations.Response.IACValidationReport.Violations {
-		var sarifResult sariftemplate.SarifResult
-		var sarifRule sariftemplate.Rule
-		var location sariftemplate.Location
-		var logicalLocation sariftemplate.LogicalLocation
-		sarifResult.RuleID = v.PolicyID
-		sarifResult.Message.Text = fmt.Sprintf("Asset type: %s has a violation, next steps: %s", v.AssetID, v.NextSteps)
-		logicalLocation.FullyQualifiedName = []string{v.AssetID}
-		location.LogicalLocation = append(location.LogicalLocation, logicalLocation)
-		sarifResult.Locations = append(sarifResult.Locations, location)
-		sarifResult.Properties = sariftemplate.PropertyResult{
-			AssetID:   v.AssetID,
-			AssetType: v.ViolatedAsset.AssetType,
-			Asset:     v.ViolatedAsset.Asset,
+func getUniqueViolations(violations []iacTemplate.Violation) map[string]iacTemplate.Violation {
+	policyToViolationMap := make(map[string]iacTemplate.Violation)
+	for _, violation := range violations {
+		policyID := violation.PolicyID
+		if _, ok := policyToViolationMap[policyID]; !ok {
+			policyToViolationMap[policyID] = violation
 		}
+	}
+	return policyToViolationMap
+}
 
-		sarifRule.ID = v.PolicyID
-		sarifRule.FullDescription = sariftemplate.FullDescription{Text: v.ViolatedPolicy.Constraint}
-		sarifRule.Properties = sariftemplate.PropertyRule{
-			Severity:   v.Severity,
-			PolicyType: v.ViolatedPolicy.ConstraintType,
-			// ComplianceStandard:  []string{"STANDARD"},
-			// PolicySet:           v.ViolatedPolicy.ConstraintType,
-			// Posture:             v.ViolatedPolicy.ConstraintType,
-			// PostureRevisionID:   v.ViolatedPolicy.ConstraintType,
-			// PostureDeploymentID: v.ViolatedPolicy.ConstraintType,
-			Constraints: v.ViolatedPolicy.Constraint,
-			NextSteps:   v.NextSteps,
+func constructRules(policyToViolationMap map[string]iacTemplate.Violation) []sariftemplate.Rule {
+	rules := []sariftemplate.Rule{}
+	for policyID, violation := range policyToViolationMap {
+		rule := sariftemplate.Rule{
+			ID: policyID,
+			FullDescription: sariftemplate.FullDescription{
+				Text: violation.ViolatedPolicy.Description,
+			},
+			Properties: sariftemplate.RuleProperties{
+				Severity:            violation.Severity,
+				PolicyType:          violation.ViolatedPolicy.ConstraintType,
+				ComplianceStandard:  violation.ViolatedPolicy.ComplianceStandards,
+				PolicySet:           violation.ViolatedPosture.PolicySet,
+				Posture:             violation.ViolatedPosture.Posture,
+				PostureRevisionID:   violation.ViolatedPosture.PostureRevisionID,
+				PostureDeploymentID: violation.ViolatedPosture.PostureDeployment,
+				Constraints:         violation.ViolatedPolicy.Constraint,
+				NextSteps:           violation.NextSteps,
+			},
 		}
-
-		sarifRules = append(sarifRules, sarifRule)
-		sarifResults = append(sarifResults, sarifResult)
+		rules = append(rules, rule)
 	}
+	return rules
+}
 
-	var sarifRun sariftemplate.SarifRun
-	sarifRun.Tool.Driver.InformationURI = constants.IAC_TOOL_DOCUMENTATION_LINK
-	sarifRun.Tool.Driver.Name = constants.IAC_TOOL_NAME
-	sarifRun.Tool.Driver.Version = constants.SARIF_VERSION
-	sarifRun.Tool.Driver.Rules = sarifRules
-	sarifRun.Results = sarifResults
-	sarifRuns = append(sarifRuns, sarifRun)
+func constructResults(violations []iacTemplate.Violation) []sariftemplate.Result {
+	results := []sariftemplate.Result{}
+	for _, violation := range violations {
+		result := sariftemplate.Result{
+			RuleID: violation.PolicyID,
+			Message: sariftemplate.Message{
+				Text: fmt.Sprintf("Asset type: %s has a violation, next steps: %s", violation.ViolatedAsset.AssetType, violation.NextSteps),
+			},
+			Locations: []sariftemplate.Location{
+				{
+					LogicalLocations: []sariftemplate.LogicalLocation{
+						{
+							FullyQualifiedName: violation.AssetID,
+						},
+					},
+				},
+			},
+			Properties: sariftemplate.ResultProperties{
+				AssetID:   violation.AssetID,
+				Asset:     violation.ViolatedAsset.Asset,
+				AssetType: violation.ViolatedAsset.AssetType,
+			},
+		}
+		results = append(results, result)
+	}
+	return results
+}
 
-	sarifOutput.Runs = sarifRuns
-
-	// Convert SARIF output to JSON
-	sarifJSON, err := json.MarshalIndent(sarifOutput, "", "  ")
+func convertSarifReportToJSONandWriteToOutputFile(sarifReport sariftemplate.SarifOutput) error {
+	sarifJSON, err := json.MarshalIndent(sarifReport, "", "  ")
 	if err != nil {
-		fmt.Println("Error marshalling SARIF:", err)
-		return
+		return fmt.Errorf("Error marshalling SARIF: %v", err)
 	}
 
-	// Write SARIF JSON to the output file
 	outputJSON, err := os.Create(*outputFilePath)
 	if err != nil {
-		fmt.Println("Error creating output file:", err)
-		return
+		return fmt.Errorf("Error creating output file: %v", err)
 	}
 	defer outputJSON.Close()
 
 	_, err = outputJSON.Write(sarifJSON)
 	if err != nil {
-		fmt.Println("Error writing SARIF JSON to file:", err)
-		return
+		return fmt.Errorf("Error writing SARIF JSON to file: %v", err)
 	}
 
 	fmt.Println(*outputFilePath)
+
+	return nil
 }
