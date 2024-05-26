@@ -12,8 +12,8 @@ import (
 )
 
 var (
-	inputFilePath  = flag.String("input", "input.json", "path of the input file")
-	outputFilePath = flag.String("output", "output.json", "path of the output file")
+	inputFilePath  = flag.String("inputFilePath", "input.json", "path of the input file")
+	outputFilePath = flag.String("outputFilePath", "output.json", "path of the output file")
 )
 
 func main() {
