@@ -7,8 +7,7 @@ import (
 	"fmt"
 	"os"
 
-	iacTemplate "github.com/pritiprajapati314/IACPlugin2024/template/iacTemplate"
-	sariftemplate "github.com/pritiprajapati314/IACPlugin2024/template/sarifTemplate"
+	template "github.com/pritiprajapati314/IACPlugin2024/template"
 	constants "github.com/pritiprajapati314/IACPlugin2024/utils"
 )
 
@@ -31,33 +30,33 @@ func main() {
 	convertSarifReportToJSONandWriteToOutputFile(sarifReport)
 }
 
-func fetchIACScanReport(filePath *string) (iacTemplate.IACReportTemplate, error) {
-	var iacReport iacTemplate.IACReportTemplate
+func fetchIACScanReport(filePath *string) (template.IACReportTemplate, error) {
+	var iacReport template.IACReportTemplate
 
 	data, err := os.ReadFile(*filePath)
 	if err != nil {
-		return iacTemplate.IACReportTemplate{}, fmt.Errorf("os.ReadFile(%s): %v", *filePath, err)
+		return template.IACReportTemplate{}, fmt.Errorf("os.ReadFile(%s): %v", *filePath, err)
 	}
 
 	if err = json.Unmarshal(data, &iacReport); err != nil {
-		return iacTemplate.IACReportTemplate{}, fmt.Errorf("Error decoding JSON: %v", err)
+		return template.IACReportTemplate{}, fmt.Errorf("Error decoding JSON: %v", err)
 	}
 
 	return iacReport, nil
 }
 
-func generateSarifReport(report iacTemplate.IACValidationReport) sariftemplate.SarifOutput {
+func generateSarifReport(report template.IACValidationReport) template.SarifOutput {
 	policyToViolationMap := getUniqueViolations(report.Violations)
 	rules := constructRules(policyToViolationMap)
 	results := constructResults(report.Violations)
-	sarifReport := sariftemplate.SarifOutput{
+	sarifReport := template.SarifOutput{
 		Version: constants.SARIF_VERSION,
 		Schema:  constants.SARIF_SCHEMA,
-		Runs: []sariftemplate.Run{
+		Runs: []template.Run{
 			{
 				Note: report.Note,
-				Tool: sariftemplate.Tool{
-					Driver: sariftemplate.Driver{
+				Tool: template.Tool{
+					Driver: template.Driver{
 						Name:           constants.IAC_TOOL_NAME,
 						Version:        "*******INCORRECT NEEDS TO BE CORRECTED*******",
 						InformationURI: constants.IAC_TOOL_DOCUMENTATION_LINK,
@@ -71,8 +70,8 @@ func generateSarifReport(report iacTemplate.IACValidationReport) sariftemplate.S
 	return sarifReport
 }
 
-func getUniqueViolations(violations []iacTemplate.Violation) map[string]iacTemplate.Violation {
-	policyToViolationMap := make(map[string]iacTemplate.Violation)
+func getUniqueViolations(violations []template.Violation) map[string]template.Violation {
+	policyToViolationMap := make(map[string]template.Violation)
 	for _, violation := range violations {
 		policyID := violation.PolicyID
 		if _, ok := policyToViolationMap[policyID]; !ok {
@@ -82,15 +81,15 @@ func getUniqueViolations(violations []iacTemplate.Violation) map[string]iacTempl
 	return policyToViolationMap
 }
 
-func constructRules(policyToViolationMap map[string]iacTemplate.Violation) []sariftemplate.Rule {
-	rules := []sariftemplate.Rule{}
+func constructRules(policyToViolationMap map[string]template.Violation) []template.Rule {
+	rules := []template.Rule{}
 	for policyID, violation := range policyToViolationMap {
-		rule := sariftemplate.Rule{
+		rule := template.Rule{
 			ID: policyID,
-			FullDescription: sariftemplate.FullDescription{
+			FullDescription: template.FullDescription{
 				Text: violation.ViolatedPolicy.Description,
 			},
-			Properties: sariftemplate.RuleProperties{
+			Properties: template.RuleProperties{
 				Severity:            violation.Severity,
 				PolicyType:          violation.ViolatedPolicy.ConstraintType,
 				ComplianceStandard:  violation.ViolatedPolicy.ComplianceStandards,
@@ -107,24 +106,24 @@ func constructRules(policyToViolationMap map[string]iacTemplate.Violation) []sar
 	return rules
 }
 
-func constructResults(violations []iacTemplate.Violation) []sariftemplate.Result {
-	results := []sariftemplate.Result{}
+func constructResults(violations []template.Violation) []template.Result {
+	results := []template.Result{}
 	for _, violation := range violations {
-		result := sariftemplate.Result{
+		result := template.Result{
 			RuleID: violation.PolicyID,
-			Message: sariftemplate.Message{
+			Message: template.Message{
 				Text: fmt.Sprintf("Asset type: %s has a violation, next steps: %s", violation.ViolatedAsset.AssetType, violation.NextSteps),
 			},
-			Locations: []sariftemplate.Location{
+			Locations: []template.Location{
 				{
-					LogicalLocations: []sariftemplate.LogicalLocation{
+					LogicalLocations: []template.LogicalLocation{
 						{
 							FullyQualifiedName: violation.AssetID,
 						},
 					},
 				},
 			},
-			Properties: sariftemplate.ResultProperties{
+			Properties: template.ResultProperties{
 				AssetID:   violation.AssetID,
 				Asset:     violation.ViolatedAsset.Asset,
 				AssetType: violation.ViolatedAsset.AssetType,
@@ -135,7 +134,7 @@ func constructResults(violations []iacTemplate.Violation) []sariftemplate.Result
 	return results
 }
 
-func convertSarifReportToJSONandWriteToOutputFile(sarifReport sariftemplate.SarifOutput) error {
+func convertSarifReportToJSONandWriteToOutputFile(sarifReport template.SarifOutput) error {
 	sarifJSON, err := json.MarshalIndent(sarifReport, "", "  ")
 	if err != nil {
 		return fmt.Errorf("Error marshalling SARIF: %v", err)

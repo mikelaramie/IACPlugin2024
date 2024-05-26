@@ -1,5 +1,5 @@
 // Package iacTemplate contains the template template for IAC Scan report.
-package iacTemplate
+package template
 
 // IACReportTemplate is the template for IAC Scan report.
 type IACReportTemplate struct {
