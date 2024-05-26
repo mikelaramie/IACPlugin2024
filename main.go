@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"os"
 
-	iacTemplate "github.com/pritiprajapati314/IACPlugin2024/iacTemplate"
-	sariftemplate "github.com/pritiprajapati314/IACPlugin2024/template"
+	iacTemplate "github.com/pritiprajapati314/IACPlugin2024/template/iacTemplate"
+	sariftemplate "github.com/pritiprajapati314/IACPlugin2024/template/template"
 	constants "github.com/pritiprajapati314/IACPlugin2024/utils"
 )
 
