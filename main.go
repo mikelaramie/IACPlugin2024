@@ -3,14 +3,13 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"os"
 
-	"google3/base/go/flag"
-
-	iacTemplate "google3/experimental/CertifiedOSS/JsonToSarif/iacTemplate"
-	sariftemplate "google3/experimental/CertifiedOSS/JsonToSarif/template"
-	constants "google3/experimental/CertifiedOSS/JsonToSarif/utils"
+	iacTemplate "github.com/pritiprajapati314/IACPlugin2024/iacTemplate"
+	sariftemplate "github.com/pritiprajapati314/IACPlugin2024/template"
+	constants "github.com/pritiprajapati314/IACPlugin2024/utils"
 )
 
 var (
