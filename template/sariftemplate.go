@@ -1,4 +1,4 @@
-package template
+package sarifTemplate
 
 type SarifOutput struct {
 	Version string `json:"version"`
