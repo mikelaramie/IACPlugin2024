@@ -3,7 +3,8 @@ package sarif
 import (
 	"fmt"
 
-	"github.com/pritiprajapati314/IACPlugin2024/template"
+	constants "github.com/pritiprajapati314/IACPlugin2024/constants"
+	template "github.com/pritiprajapati314/IACPlugin2024/template"
 )
 
 func GenerateReport(report template.IACValidationReport) (template.SarifOutput, error) {
