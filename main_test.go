@@ -1,65 +1,231 @@
 package main
 
 import (
-	"bytes"
-	"encoding/json"
-	"os"
+	"fmt"
+	"reflect"
 	"testing"
 
-	sariftemplate "google3/experimental/CertifiedOSS/JsonToSarif/template" // Replace with the correct import path
+	template "google3/experimental/CertifiedOSS/JsonToSarif/template"
 )
 
-func TestMain(t *testing.T) {
-	// Test Data Setup
-	testViolations := struct {
-		Response struct {
-			IACValidationReport struct {
-				Violations []sariftemplate.Violation `json:"violations"`
-			} `json:"iacValidationReport"`
-		} `json:"response"`
+func TestGetUniqueViolations(t *testing.T) {
+	testCases := []struct {
+		name     string
+		input    []template.Violation
+		expected map[string]template.Violation
 	}{
-		// ... (Same test data as before)
+		{
+			name:     "No violations",
+			input:    []template.Violation{},
+			expected: map[string]template.Violation{},
+		},
+		{
+			name: "Multiple unique violations",
+			input: []template.Violation{
+				{PolicyID: "policy1", Severity: "violation1"},
+				{PolicyID: "policy2", Severity: "violation2"},
+				{PolicyID: "policy3", Severity: "violation3"},
+			},
+			expected: map[string]template.Violation{
+				"policy1": {PolicyID: "policy1", Severity: "violation1"},
+				"policy2": {PolicyID: "policy2", Severity: "violation2"},
+				"policy3": {PolicyID: "policy3", Severity: "violation3"},
+			},
+		},
+		{
+			name: "Duplicate violations",
+			input: []template.Violation{
+				{PolicyID: "policy1", Severity: "violation1"},
+				{PolicyID: "policy2", Severity: "violation2"},
+				{PolicyID: "policy1", Severity: "voilation1"},
+			},
+			expected: map[string]template.Violation{
+				"policy1": {PolicyID: "policy1", Severity: "violation1"},
+				"policy2": {PolicyID: "policy2", Severity: "violation2"},
+			},
+		},
 	}
 
-	// Create a buffer to capture the output
-	var outputBuffer bytes.Buffer
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			result := getUniqueViolations(tc.input)
 
-	// Redirect standard output to the buffer
-	originalStdout := os.Stdout
-	os.Stdout = &outputBuffer
-
-	// Execute the main function (replace with the actual function call)
-	// Assuming there's a function like `convertToSarif` that returns the SARIF output as []byte
-	sarifData := convertToSarif(testViolations) // Replace with actual function call
-
-	// Restore standard output
-	os.Stdout = originalStdout
-
-	// Parse the SARIF output from the buffer
-	var sarifOutput sariftemplate.SarifOutput
-	if err := json.Unmarshal(sarifData, &sarifOutput); err != nil {
-		t.Fatalf("Error decoding SARIF output: %v", err)
+			if !reflect.DeepEqual(result, tc.expected) {
+				fmt.Printf("Expected %v, got %v\n", tc.expected, result)
+			}
+		})
 	}
-
-	// Assertions (add more specific assertions based on expected output)
-	if len(sarifOutput.Runs) != 1 {
-		t.Errorf("Expected 1 run, got %d", len(sarifOutput.Runs))
-	}
-	// ... Add more specific assertions for results, rules, etc.
-
-	// You can also inspect the contents of outputBuffer if needed
-	// t.Logf("Output Buffer Contents: %s", outputBuffer.String())
 }
 
-// (Add the convertToSarif function here if it's not already present)
-func convertToSarif(violations interface{}) []byte {
-	// ... (Your conversion logic here)
-
-	// Marshal the SARIF output
-	sarifJSON, err := json.MarshalIndent(sarifOutput, "", "  ")
-	if err != nil {
-		// Handle the error appropriately
+func TestConstructRules(t *testing.T) {
+	testCases := []struct {
+		name     string
+		input    map[string]template.Violation
+		expected []template.Rule
+	}{
+		{
+			name:     "Empty Input",
+			input:    map[string]template.Violation{},
+			expected: []template.Rule{},
+		},
+		{
+			name: "Multiple Violations",
+			input: map[string]template.Violation{
+				"policy1": {
+					PolicyID:        "policy1",
+					Severity:        "HIGH",
+					ViolatedPolicy:  template.PolicyDetails{Description: "Description 1", ConstraintType: "Type 1", ComplianceStandards: []string{"Standard 1"}},
+					ViolatedPosture: template.PostureDetails{PolicySet: "Set 1", Posture: "Posture 1", PostureRevisionID: "Rev 1", PostureDeployment: "Dep 1"},
+					NextSteps:       "Next steps 1",
+				},
+				"policy2": {
+					PolicyID:       "policy2",
+					Severity:       "MEDIUM",
+					ViolatedPolicy: template.PolicyDetails{Description: "Description 2", ConstraintType: "Type 2"},
+					NextSteps:      "Next steps 2",
+				},
+			},
+			expected: []template.Rule{
+				{
+					ID:              "policy1",
+					FullDescription: template.FullDescription{Text: "Description 1"},
+					Properties: template.RuleProperties{
+						Severity:            "HIGH",
+						PolicyType:          "Type 1",
+						ComplianceStandard:  []string{"Standard 1"},
+						PolicySet:           "Set 1",
+						Posture:             "Posture 1",
+						PostureRevisionID:   "Rev 1",
+						PostureDeploymentID: "Dep 1",
+						NextSteps:           "Next steps 1",
+					},
+				},
+				{
+					ID:              "policy2",
+					FullDescription: template.FullDescription{Text: "Description 2"},
+					Properties: template.RuleProperties{
+						Severity:   "MEDIUM",
+						PolicyType: "Type 2",
+						NextSteps:  "Next steps 2",
+					},
+				},
+			},
+		},
+		{
+			name: "Missing Fields",
+			input: map[string]template.Violation{
+				"policy3": {
+					PolicyID:        "policy3",
+					Severity:        "LOW",
+					ViolatedPolicy:  template.PolicyDetails{},
+					ViolatedPosture: template.PostureDetails{},
+					NextSteps:       "Next steps 3",
+				},
+			},
+			expected: []template.Rule{
+				{
+					ID: "policy3",
+					Properties: template.RuleProperties{
+						Severity:  "LOW",
+						NextSteps: "Next steps 3",
+					},
+				},
+			},
+		},
 	}
 
-	return sarifJSON
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			result := constructRules(tc.input)
+
+			if !reflect.DeepEqual(result, tc.expected) {
+				fmt.Printf("Expected %v, got %v\n", tc.expected, result)
+			}
+		})
+	}
+}
+
+func TestConstructResults(t *testing.T) {
+	testCases := []struct {
+		name     string
+		input    []template.Violation
+		expected []template.Result
+	}{
+		{
+			name:     "Empty Input",
+			input:    []template.Violation{},
+			expected: []template.Result{},
+		},
+		{
+			name: "Missing Fields",
+			input: []template.Violation{
+				{
+					PolicyID:      "policy1",
+					AssetID:       "asset1",
+					ViolatedAsset: template.AssetDetails{AssetType: "type1", Asset: "asset1"},
+				},
+			},
+		},
+		{
+			name: "Multiple Violations",
+			input: []template.Violation{
+				{
+					PolicyID:      "policy1",
+					AssetID:       "asset1",
+					NextSteps:     "next_steps1",
+					ViolatedAsset: template.AssetDetails{AssetType: "type1", Asset: "asset1"},
+				},
+				{
+					PolicyID:      "policy2",
+					AssetID:       "asset2",
+					NextSteps:     "next_steps2",
+					ViolatedAsset: template.AssetDetails{AssetType: "type2", Asset: "asset2"},
+				},
+			},
+			expected: []template.Result{
+				{
+					RuleID:  "policy1",
+					Message: template.Message{Text: "Asset type: type1 has a violation, next steps: next_steps1"},
+					Locations: []template.Location{
+						{
+							LogicalLocations: []template.LogicalLocation{
+								{FullyQualifiedName: "asset1"},
+							},
+						},
+					},
+					Properties: template.ResultProperties{
+						AssetID:   "asset1",
+						Asset:     "asset1",
+						AssetType: "type1",
+					},
+				},
+				{
+					RuleID:  "policy2",
+					Message: template.Message{Text: "Asset type: type2 has a violation, next steps: next_steps2"},
+					Locations: []template.Location{
+						{
+							LogicalLocations: []template.LogicalLocation{
+								{FullyQualifiedName: "asset2"},
+							},
+						},
+					},
+					Properties: template.ResultProperties{
+						AssetID:   "asset2",
+						Asset:     "asset2",
+						AssetType: "type2",
+					},
+				},
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			result := constructResults(tc.input)
+
+			if !reflect.DeepEqual(result, tc.expected) {
+				fmt.Printf("Expected %v, got %v\n", tc.expected, result)
+			}
+		})
+	}
 }
