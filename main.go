@@ -17,9 +17,11 @@ var (
 )
 
 func main() {
+	flag.Parse()
+
 	iacReport, err := fetchIACScanReport(inputFilePath)
 	if err != nil {
-		fmt.Printf("FetchIACScanReport: %v", err)
+		fmt.Printf("fetchIACScanReport: %v", err)
 		os.Exit(1)
 	}
 
@@ -41,7 +43,7 @@ func fetchIACScanReport(filePath *string) (template.IACReportTemplate, error) {
 	}
 
 	if err = json.Unmarshal(data, &iacReport); err != nil {
-		return template.IACReportTemplate{}, fmt.Errorf("json.Unmarshal: %v", err)
+		return template.IACReportTemplate{}, fmt.Errorf("Error decoding JSON: %v", err)
 	}
 
 	return iacReport, nil
