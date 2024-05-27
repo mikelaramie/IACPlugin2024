@@ -17,15 +17,17 @@ var (
 )
 
 func main() {
-	flag.Parse()
-
 	iacReport, err := fetchIACScanReport(inputFilePath)
 	if err != nil {
-		fmt.Println("Error fetching IAC scan report:", err)
-		return
+		fmt.Printf("FetchIACScanReport: %v", err)
+		os.Exit(1)
 	}
 
-	sarifReport := generateSarifReport(iacReport.Response.IacValidationReport)
+	sarifReport, err := generateSarifReport(iacReport.Response.IacValidationReport)
+	if err != nil {
+		fmt.Printf("FenerateSarifReport: %v", err)
+		os.Exit(1)
+	}
 
 	convertSarifReportToJSONandWriteToOutputFile(sarifReport)
 }
@@ -39,15 +41,19 @@ func fetchIACScanReport(filePath *string) (template.IACReportTemplate, error) {
 	}
 
 	if err = json.Unmarshal(data, &iacReport); err != nil {
-		return template.IACReportTemplate{}, fmt.Errorf("Error decoding JSON: %v", err)
+		return template.IACReportTemplate{}, fmt.Errorf("json.Unmarshal: %v", err)
 	}
 
 	return iacReport, nil
 }
 
-func generateSarifReport(report template.IACValidationReport) template.SarifOutput {
+func generateSarifReport(report template.IACValidationReport) (template.SarifOutput, error) {
 	policyToViolationMap := getUniqueViolations(report.Violations)
-	rules := constructRules(policyToViolationMap)
+	rules, err := constructRules(policyToViolationMap)
+	if err != nil {
+		return template.SarifOutput{}, fmt.Errorf("constructRules: %v", err)
+	}
+
 	results := constructResults(report.Violations)
 	sarifReport := template.SarifOutput{
 		Version: constants.SARIF_VERSION,
@@ -67,7 +73,7 @@ func generateSarifReport(report template.IACValidationReport) template.SarifOutp
 			},
 		},
 	}
-	return sarifReport
+	return sarifReport, nil
 }
 
 func getUniqueViolations(violations []template.Violation) map[string]template.Violation {
@@ -78,12 +84,17 @@ func getUniqueViolations(violations []template.Violation) map[string]template.Vi
 			policyToViolationMap[policyID] = violation
 		}
 	}
+
 	return policyToViolationMap
 }
 
-func constructRules(policyToViolationMap map[string]template.Violation) []template.Rule {
+func constructRules(policyToViolationMap map[string]template.Violation) ([]template.Rule, error) {
 	rules := []template.Rule{}
 	for policyID, violation := range policyToViolationMap {
+		if !validateSeverity(violation.Severity) {
+			return nil, fmt.Errorf("validateSeverity: %s", violation.Severity)
+		}
+
 		rule := template.Rule{
 			ID: policyID,
 			FullDescription: template.FullDescription{
@@ -101,9 +112,10 @@ func constructRules(policyToViolationMap map[string]template.Violation) []templa
 				NextSteps:           violation.NextSteps,
 			},
 		}
+
 		rules = append(rules, rule)
 	}
-	return rules
+	return rules, nil
 }
 
 func constructResults(violations []template.Violation) []template.Result {
@@ -137,21 +149,28 @@ func constructResults(violations []template.Violation) []template.Result {
 func convertSarifReportToJSONandWriteToOutputFile(sarifReport template.SarifOutput) error {
 	sarifJSON, err := json.MarshalIndent(sarifReport, "", "  ")
 	if err != nil {
-		return fmt.Errorf("Error marshalling SARIF: %v", err)
+		return fmt.Errorf("json.MarshalIndent: %v", err)
 	}
 
 	outputJSON, err := os.Create(*outputFilePath)
 	if err != nil {
-		return fmt.Errorf("Error creating output file: %v", err)
+		return fmt.Errorf("os.Create: %v", err)
 	}
 	defer outputJSON.Close()
 
 	_, err = outputJSON.Write(sarifJSON)
 	if err != nil {
-		return fmt.Errorf("Error writing SARIF JSON to file: %v", err)
+		return fmt.Errorf("outputJSON.Write: %v", err)
 	}
 
 	fmt.Println(*outputFilePath)
 
 	return nil
+}
+
+func validateSeverity(severity string) bool {
+	if severity != constants.CRITICAL && severity != constants.HIGH && severity != constants.MEDIUM && severity != constants.LOW {
+		return false
+	}
+	return true
 }
