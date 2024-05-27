@@ -6,3 +6,10 @@ const (
 	IAC_TOOL_DOCUMENTATION_LINK = ""
 	IAC_TOOL_NAME               = "analyze-code-security-scc"
 )
+
+const (
+	CRITICAL = "CRITICAL"
+	HIGH     = "HIGH"
+	MEDIUM   = "MEDIUM"
+	LOW      = "LOW"
+)
