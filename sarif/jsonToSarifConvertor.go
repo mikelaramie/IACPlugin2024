@@ -52,7 +52,7 @@ func constructRules(policyToViolationMap map[string]template.Violation) ([]templ
 	rules := []template.Rule{}
 	for policyID, violation := range policyToViolationMap {
 		if !validateSeverity(violation.Severity) {
-			return nil, fmt.Errorf("validateSeverity: %s", violation.Severity)
+			return nil, fmt.Errorf("validateSeverity() invalid severity: %s ", violation.Severity)
 		}
 
 		rule := template.Rule{
