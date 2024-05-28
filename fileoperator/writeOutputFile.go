@@ -8,7 +8,7 @@ import (
 	"github.com/pritiprajapati314/IACPlugin2024/template"
 )
 
-func ConvertSarifReportToJSONandWriteToOutputFile(sarifReport template.SarifOutput) error {
+func ConvertSarifReportToJSONandWriteToOutputFile(sarifReport template.SarifOutput, outputFilePath *string) error {
 	sarifJSON, err := json.MarshalIndent(sarifReport, "", "  ")
 	if err != nil {
 		return fmt.Errorf("json.MarshalIndent: %v", err)
