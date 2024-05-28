@@ -30,5 +30,5 @@ func main() {
 		os.Exit(1)
 	}
 
-	return fileoperator.ConvertSarifReportToJSONandWriteToOutputFile(sarifReport, outputFilePath)
+	fileoperator.ConvertSarifReportToJSONandWriteToOutputFile(sarifReport, outputFilePath)
 }
