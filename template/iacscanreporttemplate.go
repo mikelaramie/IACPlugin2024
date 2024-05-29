@@ -19,50 +19,50 @@ package template
 
 // IACReportTemplate is the template for IAC Scan report.
 type IACReportTemplate struct {
-	Response Responses `json:"response"`
+	Response Responses `json:"response,omitempty"`
 }
 
 // Response is the response of the IAC Scan report.
 type Responses struct {
-	Name                string              `json:"name"`
-	CreateTime          string              `json:"createTime"`
-	UpdateTime          string              `json:"updateTime"`
-	IacValidationReport IACValidationReport `json:"iacValidationReport"`
+	Name                string              `json:"name,omitempty"`
+	CreateTime          string              `json:"createTime,omitempty"`
+	UpdateTime          string              `json:"updateTime,omitempty"`
+	IacValidationReport IACValidationReport `json:"iacValidationReport,omitempty"`
 }
 
 type IACValidationReport struct {
-	Violations []Violation `json:"violations"`
-	Note       string      `json:"note"`
+	Violations []Violation `json:"violations,omitempty"`
+	Note       string      `json:"note,omitempty"`
 }
 
 // Violation is a violation of the Sarif template.
 type Violation struct {
-	AssetID         string         `json:"assetId"`
-	PolicyID        string         `json:"policyId"`
-	ViolatedPosture PostureDetails `json:"violatedPosture"`
-	ViolatedPolicy  PolicyDetails  `json:"violatedPolicy"`
-	ViolatedAsset   AssetDetails   `json:"violatedAsset"`
-	Severity        string         `json:"severity"`
-	NextSteps       string         `json:"nextSteps"`
+	AssetID         string         `json:"assetId,omitempty"`
+	PolicyID        string         `json:"policyId,omitempty"`
+	ViolatedPosture PostureDetails `json:"violatedPosture,omitempty"`
+	ViolatedPolicy  PolicyDetails  `json:"violatedPolicy,omitempty"`
+	ViolatedAsset   AssetDetails   `json:"violatedAsset,omitempty"`
+	Severity        string         `json:"severity,omitempty"`
+	NextSteps       string         `json:"nextSteps,omitempty"`
 }
 
 type PostureDetails struct {
-	PostureDeployment               string `json:"postureDeployment"`
-	PostureDeploymentTargetResource string `json:"postureDeploymentTargetResource"`
-	Posture                         string `json:"posture"`
-	PostureRevisionID               string `json:"postureRevisionId"`
-	PolicySet                       string `json:"policySet"`
+	PostureDeployment               string `json:"postureDeployment,omitempty"`
+	PostureDeploymentTargetResource string `json:"postureDeploymentTargetResource,omitempty"`
+	Posture                         string `json:"posture,omitempty"`
+	PostureRevisionID               string `json:"postureRevisionId,omitempty"`
+	PolicySet                       string `json:"policySet,omitempty"`
 }
 
 type PolicyDetails struct {
-	Constraint          string   `json:"constraint"`
-	ConstraintType      string   `json:"constraintType"`
-	ComplianceStandards []string `json:"complianceStandards"`
-	Description         string   `json:"description"`
+	Constraint          string   `json:"constraint,omitempty"`
+	ConstraintType      string   `json:"constraintType,omitempty"`
+	ComplianceStandards []string `json:"complianceStandards,omitempty"`
+	Description         string   `json:"description,omitempty"`
 }
 
 // AssetDetails is an asset of the Sarif template.
 type AssetDetails struct {
-	Asset     string `json:"asset"`
-	AssetType string `json:"assetType"`
+	Asset     string `json:"asset,omitempty"`
+	AssetType string `json:"assetType,omitempty"`
 }
