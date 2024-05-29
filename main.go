@@ -27,7 +27,7 @@ import (
 )
 
 var (
-	inputFilePath  = flag.String("filePath", "", "path of the input file")
+	inputFilePath  = flag.String("filePath", "", "path of input file")
 	outputFilePath = flag.String("output", "output.json", "path of the output file")
 )
 
