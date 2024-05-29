@@ -1,71 +1,71 @@
 package template
 
 type SarifOutput struct {
-	Version string `json:"version"`
-	Schema  string `json:"$schema"`
-	Runs    []Run  `json:"runs"`
+	Version string `json:"version, omitempty"`
+	Schema  string `json:"$schema, omitempty"`
+	Runs    []Run  `json:"runs, omitempty"`
 }
 
 type Run struct {
-	Note    string   `json:"note"`
-	Tool    Tool     `json:"tool"`
-	Results []Result `json:"results"`
+	Note    string   `json:"note, omitempty"`
+	Tool    Tool     `json:"tool, omitempty"`
+	Results []Result `json:"results, omitempty"`
 }
 
 type Tool struct {
-	Driver Driver `json:"driver"`
+	Driver Driver `json:"driver, omitempty"`
 }
 
 type Driver struct {
-	Name           string `json:"name"`
-	Version        string `json:"version"`
-	InformationURI string `json:"informationUri"`
-	Rules          []Rule `json:"rules"`
+	Name           string `json:"name, omitempty"`
+	Version        string `json:"version, omitempty"`
+	InformationURI string `json:"informationUri, omitempty"`
+	Rules          []Rule `json:"rules, omitempty"`
 }
 
 type Rule struct {
-	ID              string          `json:"id"`
-	FullDescription FullDescription `json:"fullDescription"`
-	Properties      RuleProperties  `json:"properties"`
+	ID              string          `json:"id, omitempty"`
+	FullDescription FullDescription `json:"fullDescription, omitempty"`
+	Properties      RuleProperties  `json:"properties, omitempty"`
 }
 
 type FullDescription struct {
-	Text string `json:"text"`
+	Text string `json:"text, omitempty"`
 }
 
 type RuleProperties struct {
-	Severity            string   `json:"severity"`
-	PolicyType          string   `json:"policyType"`
-	ComplianceStandard  []string `json:"complianceStandard"`
-	PolicySet           string   `json:"policySet"`
-	Posture             string   `json:"posture"`
-	PostureRevisionID   string   `json:"postureRevisionId"`
-	PostureDeploymentID string   `json:"postureDeploymentId"`
-	Constraints         string   `json:"constraints"`
-	NextSteps           string   `json:"nextSteps"`
+	Severity            string   `json:"severity, omitempty"`
+	PolicyType          string   `json:"policyType, omitempty"`
+	ComplianceStandard  []string `json:"complianceStandard, omitempty"`
+	PolicySet           string   `json:"policySet, omitempty"`
+	Posture             string   `json:"posture, omitempty"`
+	PostureRevisionID   string   `json:"postureRevisionId, omitempty"`
+	PostureDeploymentID string   `json:"postureDeploymentId, omitempty"`
+	Constraints         string   `json:"constraints, omitempty"`
+	NextSteps           string   `json:"nextSteps, omitempty"`
 }
 
 type Result struct {
-	RuleID     string           `json:"ruleId"`
-	Message    Message          `json:"message"`
-	Locations  []Location       `json:"locations"`
-	Properties ResultProperties `json:"properties"`
+	RuleID     string           `json:"ruleId, omitempty"`
+	Message    Message          `json:"message, omitempty"`
+	Locations  []Location       `json:"locations, omitempty"`
+	Properties ResultProperties `json:"properties, omitempty"`
 }
 
 type Message struct {
-	Text string `json:"text"`
+	Text string `json:"text, omitempty"`
 }
 
 type Location struct {
-	LogicalLocations []LogicalLocation `json:"logicalLocation"`
+	LogicalLocations []LogicalLocation `json:"logicalLocation, omitempty"`
 }
 
 type LogicalLocation struct {
-	FullyQualifiedName string `json:"fullyQualifiedName"`
+	FullyQualifiedName string `json:"fullyQualifiedName, omitempty"`
 }
 
 type ResultProperties struct {
-	AssetID   string `json:"assetId"`
-	AssetType string `json:"assetType"`
-	Asset     string `json:"asset"`
+	AssetID   string `json:"assetId, omitempty"`
+	AssetType string `json:"assetType, omitempty"`
+	Asset     string `json:"asset, omitempty"`
 }
