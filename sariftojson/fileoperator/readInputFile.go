@@ -21,27 +21,20 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/pritiprajapati314/IACPlugin2024/template"
+	"github.com/pritiprajapati314/IACPlugin2024/sariftojson/template"
 )
 
-func ConvertSarifReportToJSONandWriteToOutputFile(sarifReport template.SarifOutput, outputFilePath *string) error {
-	sarifJSON, err := json.MarshalIndent(sarifReport, "", "  ")
+func FetchIACScanReport(filePath *string) (template.IACReportTemplate, error) {
+	var iacReport template.IACReportTemplate
+
+	data, err := os.ReadFile(*filePath)
 	if err != nil {
-		return fmt.Errorf("json.MarshalIndent: %v", err)
+		return template.IACReportTemplate{}, fmt.Errorf("os.ReadFile(%s): %v", *filePath, err)
 	}
 
-	outputJSON, err := os.Create(*outputFilePath)
-	if err != nil {
-		return fmt.Errorf("os.Create: %v", err)
-	}
-	defer outputJSON.Close()
-
-	_, err = outputJSON.Write(sarifJSON)
-	if err != nil {
-		return fmt.Errorf("outputJSON.Write: %v", err)
+	if err = json.Unmarshal(data, &iacReport); err != nil {
+		return template.IACReportTemplate{}, fmt.Errorf("Error decoding JSON: %v", err)
 	}
 
-	fmt.Println(*outputFilePath)
-
-	return nil
+	return iacReport, nil
 }

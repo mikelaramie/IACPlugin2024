@@ -22,7 +22,8 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
-	template "github.com/pritiprajapati314/IACPlugin2024/template"
+
+	template "github.com/pritiprajapati314/IACPlugin2024/sariftojson/template"
 )
 
 func TestGenerateReport(t *testing.T) {
