@@ -69,12 +69,12 @@ func TestGetUniqueViolations(t *testing.T) {
 		expected map[string]template.Violation
 	}{
 		{
-			name:     "No violations",
+			name:     "NoViolations",
 			input:    []template.Violation{},
 			expected: map[string]template.Violation{},
 		},
 		{
-			name: "Multiple unique violations",
+			name: "MultipleUniqueViolations",
 			input: []template.Violation{
 				{PolicyID: "policy1", Severity: "violation1"},
 				{PolicyID: "policy2", Severity: "violation2"},
@@ -87,7 +87,7 @@ func TestGetUniqueViolations(t *testing.T) {
 			},
 		},
 		{
-			name: "Duplicate violations",
+			name: "DuplicateViolations",
 			input: []template.Violation{
 				{PolicyID: "policy1", Severity: "violation1"},
 				{PolicyID: "policy2", Severity: "violation2"},
@@ -118,12 +118,12 @@ func TestConstructRules(t *testing.T) {
 		expected []template.Rule
 	}{
 		{
-			name:     "Empty Input",
+			name:     "EmptyInput",
 			input:    map[string]template.Violation{},
 			expected: []template.Rule{},
 		},
 		{
-			name: "Multiple Violations",
+			name: "MultipleViolations",
 			input: map[string]template.Violation{
 				"policy1": {
 					PolicyID:        "policy1",
@@ -166,7 +166,7 @@ func TestConstructRules(t *testing.T) {
 			},
 		},
 		{
-			name: "Missing Fields",
+			name: "MissingFields",
 			input: map[string]template.Violation{
 				"policy3": {
 					PolicyID:        "policy3",
@@ -209,12 +209,12 @@ func TestConstructResults(t *testing.T) {
 		expected []template.Result
 	}{
 		{
-			name:     "Empty Input",
+			name:     "EmptyInput",
 			input:    []template.Violation{},
 			expected: []template.Result{},
 		},
 		{
-			name: "Missing Fields",
+			name: "MissingFields",
 			input: []template.Violation{
 				{
 					PolicyID: "policy1",
@@ -239,7 +239,7 @@ func TestConstructResults(t *testing.T) {
 			},
 		},
 		{
-			name: "Multiple Violations",
+			name: "MultipleViolations",
 			input: []template.Violation{
 				{
 					PolicyID:      "policy1",
