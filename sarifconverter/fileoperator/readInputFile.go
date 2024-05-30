@@ -21,7 +21,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/pritiprajapati314/IACPlugin2024/sariftojson/template"
+	"github.com/pritiprajapati314/IACPlugin2024/sarifconverter/template"
 )
 
 func FetchIACScanReport(filePath *string) (template.IACReportTemplate, error) {

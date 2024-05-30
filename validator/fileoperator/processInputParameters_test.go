@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/pritiprajapati314/IACPlugin2024/jsonprocessor/utils"
+	"github.com/pritiprajapati314/IACPlugin2024/validator/utils"
 )
 
 func TestProcessExpression(t *testing.T) {

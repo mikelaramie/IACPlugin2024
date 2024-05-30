@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/pritiprajapati314/IACPlugin2024/jsonprocessor/fileoperator"
-	"github.com/pritiprajapati314/IACPlugin2024/jsonprocessor/utils"
+	"github.com/pritiprajapati314/IACPlugin2024/validator/fileoperator"
+	"github.com/pritiprajapati314/IACPlugin2024/validator/utils"
 )
 
 func IsIACScanReportVoilatingSeverity(filePath, expression *string) (bool, error) {

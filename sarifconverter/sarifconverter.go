@@ -22,8 +22,8 @@ import (
 	"fmt"
 	"os"
 
-	fileoperator "github.com/pritiprajapati314/IACPlugin2024/sariftojson/fileoperator"
-	sarif "github.com/pritiprajapati314/IACPlugin2024/sariftojson/sarif"
+	fileoperator "github.com/pritiprajapati314/IACPlugin2024/sarifconverter/fileoperator"
+	sarif "github.com/pritiprajapati314/IACPlugin2024/sarifconverter/sarif"
 )
 
 var (

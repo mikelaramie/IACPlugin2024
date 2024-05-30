@@ -19,8 +19,8 @@ package sarif
 import (
 	"fmt"
 
-	template "github.com/pritiprajapati314/IACPlugin2024/sariftojson/template"
-	constants "github.com/pritiprajapati314/IACPlugin2024/sariftojson/utils"
+	template "github.com/pritiprajapati314/IACPlugin2024/sarifconverter/template"
+	constants "github.com/pritiprajapati314/IACPlugin2024/sarifconverter/utils"
 )
 
 func GenerateReport(report template.IACValidationReport) (template.SarifOutput, error) {

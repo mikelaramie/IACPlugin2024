@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/pritiprajapati314/IACPlugin2024/jsonprocessor/evaluate"
+	"github.com/pritiprajapati314/IACPlugin2024/validator/evaluate"
 )
 
 var (

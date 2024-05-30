@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/pritiprajapati314/IACPlugin2024/jsonprocessor/utils"
+	"github.com/pritiprajapati314/IACPlugin2024/validator/utils"
 )
 
 func FetchVoilationFromInputFile(filePath *string) (map[string]int, error) {

@@ -23,7 +23,7 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 
-	template "github.com/pritiprajapati314/IACPlugin2024/sariftojson/template"
+	template "github.com/pritiprajapati314/IACPlugin2024/sarifconverter/template"
 )
 
 func TestGenerateReport(t *testing.T) {

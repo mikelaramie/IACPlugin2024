@@ -21,7 +21,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/pritiprajapati314/IACPlugin2024/sariftojson/template"
+	"github.com/pritiprajapati314/IACPlugin2024/sarifconverter/template"
 )
 
 func ConvertSarifReportToJSONandWriteToOutputFile(sarifReport template.SarifOutput, outputFilePath *string) error {
