@@ -64,6 +64,10 @@ func ProcessExpression(expression string) (string, map[string]int, error) {
 			return "", nil, fmt.Errorf("Error converting value to integer: %v", err)
 		}
 
+		if value < 0 {
+			return "", nil, fmt.Errorf("Validation expression can not have negative values!")
+		}
+
 		userVoilationCount[key] = value
 	}
 

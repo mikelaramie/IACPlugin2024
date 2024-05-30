@@ -8,85 +8,6 @@ import (
 	utils "github.com/pritiprajapati314/IACPlugin2024/validator/utils"
 )
 
-func TestProcessExpression(t *testing.T) {
-	tests := []struct {
-		name                   string
-		expression             string
-		expectedSeverityCounts map[string]int
-		expectedOperator       string
-		expectedError          bool
-	}{
-		{
-			name:       "Succeeds",
-			expression: "critical:2,high:1,medium:3,operator:or",
-			expectedSeverityCounts: map[string]int{
-				utils.CRITICAL: 2,
-				utils.HIGH:     1,
-				utils.MEDIUM:   3,
-			},
-			expectedOperator: utils.OR,
-			expectedError:    false,
-		},
-		{
-			name:                   "duplicate operator present",
-			expression:             "critical:2,operator:or,operator:and",
-			expectedSeverityCounts: nil,
-			expectedOperator:       "",
-			expectedError:          true,
-		},
-		{
-			name:                   "operator not present",
-			expression:             "critical:2,high:1,medium:3",
-			expectedSeverityCounts: nil,
-			expectedOperator:       "",
-			expectedError:          true,
-		},
-		{
-			name:                   "duplicate severity present",
-			expression:             "critical:2,high:1,medium:3,medium:4,operator:or",
-			expectedSeverityCounts: nil,
-			expectedOperator:       "",
-			expectedError:          true,
-		},
-		{
-			name:                   "invalid expression",
-			expression:             "critical:invalid,high:1,medium:3",
-			expectedSeverityCounts: nil,
-			expectedOperator:       "",
-			expectedError:          true,
-		},
-		{
-			name:       "expression not passed, set default",
-			expression: "",
-			expectedSeverityCounts: map[string]int{
-				utils.CRITICAL: 1,
-				utils.HIGH:     1,
-				utils.MEDIUM:   1,
-				utils.LOW:      1,
-			},
-			expectedOperator: utils.OR,
-			expectedError:    false,
-		},
-	}
-
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			t.Parallel()
-
-			operator, severityCounts, err := processExpression(test.expression)
-			if (err != nil) != test.expectedError {
-				t.Fatalf("Expected error: %v, got error %v", test.expectedError, err)
-			}
-			if diff := cmp.Diff(test.expectedSeverityCounts, severityCounts); diff != "" {
-				t.Errorf("Expected severityCounts (+got, -want): %v", diff)
-			}
-			if err == nil && operator != test.expectedOperator {
-				t.Errorf("Unexpected operator: expected %v, got %v", test.expectedOperator, operator)
-			}
-		})
-	}
-}
-
 func TestComputeVoliationState(t *testing.T) {
 	tests := []struct {
 		name                              string
@@ -137,7 +58,7 @@ func TestComputeVoliationState(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name: "InvalidSeverity",
+			name: "InvalidSeverity_Error",
 			severityCounts: map[string]int{
 				utils.CRITICAL: 2,
 				utils.HIGH:     1,
@@ -219,7 +140,8 @@ func TestIsViolatingSeverity(t *testing.T) {
 			wantErr:      false,
 		},
 		{
-			operator:                  "invalid",
+			name:                      "InvalidOperator_Failure",
+			operator:                  "RANDOM",
 			failureCriteriaVoilations: map[string]bool{},
 			expectedBool:              true,
 			wantErr:                   true,

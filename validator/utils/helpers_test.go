@@ -13,28 +13,28 @@ func TestValidateOperator(t *testing.T) {
 		wantError          bool
 	}{
 		{
-			name:               "Valid single operator (AND)",
+			name:               "AndOperator_Succeeds",
 			operator:           "",
 			expressionOperator: utils.AND,
 			expectedOperator:   utils.AND,
 			wantError:          false,
 		},
 		{
-			name:               "Valid single operator (OR)",
+			name:               "OrOperator_Succeeds",
 			operator:           "",
 			expressionOperator: utils.OR,
 			expectedOperator:   utils.OR,
 			wantError:          false,
 		},
 		{
-			name:               "Invalid operator",
+			name:               "InvalidOperator_Failure",
 			operator:           "",
 			expressionOperator: "NOT",
 			expectedOperator:   "",
 			wantError:          true,
 		},
 		{
-			name:               "operator already set",
+			name:               "OperatorAlreadySet_Failure",
 			operator:           utils.AND,
 			expressionOperator: utils.OR,
 			expectedOperator:   "",
@@ -65,19 +65,19 @@ func TestAll(t *testing.T) {
 		expectedOutput bool
 	}{
 		{
-			name:           "All true",
+			name:           "AllTrue",
 			input:          map[string]bool{"CRITICAL": true, "HIGH": true, "LOW": true},
 			expectedOutput: true,
 		},
 		{
-			name:           "One false",
+			name:           "AllNotTrue",
 			input:          map[string]bool{"HIGH": true, "LOW": false, "MEDIUM": true},
 			expectedOutput: false,
 		},
 		{
-			name:           "Empty map",
+			name:           "EmptyMap",
 			input:          map[string]bool{},
-			expectedOutput: true,
+			expectedOutput: false,
 		},
 	}
 
@@ -99,17 +99,17 @@ func TestAny(t *testing.T) {
 		expectedOutput bool
 	}{
 		{
-			name:           "One true",
+			name:           "OneTrue",
 			input:          map[string]bool{"CRITICAL": true, "HIGH": false, "LOW": false},
 			expectedOutput: true,
 		},
 		{
-			name:           "All false",
+			name:           "AllFalse",
 			input:          map[string]bool{"HIGH": false, "MEDIUM": false, "LOW": false},
 			expectedOutput: false,
 		},
 		{
-			name:           "Empty map",
+			name:           "EmptyMap",
 			input:          map[string]bool{},
 			expectedOutput: false,
 		},

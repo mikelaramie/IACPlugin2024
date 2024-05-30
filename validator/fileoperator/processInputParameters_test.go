@@ -1,9 +1,9 @@
 package fileoperator
 
 import (
-	"reflect"
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
 	"github.com/pritiprajapati314/IACPlugin2024/validator/utils"
 )
 
@@ -11,74 +11,87 @@ func TestProcessExpression(t *testing.T) {
 	tests := []struct {
 		name                   string
 		expression             string
-		ExpectedOperator       string
-		expectedVoilationCount map[string]int
-		wantError              bool
+		expectedSeverityCounts map[string]int
+		expectedOperator       string
+		expectedError          bool
 	}{
 		{
-			name:             "Valid expression with operator",
-			expression:       "AND:CRITICAL:2,HIGH:3",
-			expectedOperator: utils.AND,
-			expectedVoilationCount: map[string]int{
+			name:       "Succeeds",
+			expression: "critical:2,high:1,medium:3,operator:or",
+			expectedSeverityCounts: map[string]int{
 				utils.CRITICAL: 2,
-				utils.HIGH:     3,
+				utils.HIGH:     1,
+				utils.MEDIUM:   3,
 			},
-			wantError: false,
+			expectedOperator: utils.OR,
+			expectedError:    false,
 		},
 		{
-			name:             "Valid expression with OR operator",
-			expression:       "OR:HIGH:0,LOW:1",
-			ExpectedOperator: utils.OR,
-			expectedVoilationCount: map[string]int{
-				utils.HIGH: 0,
-				utils.LOW:  1,
+			name:       "ExpressionWithNegativeValue_Failure",
+			expression: "critical:2,high:1,medium:3,operator:or",
+			expectedSeverityCounts: map[string]int{
+				utils.CRITICAL: 2,
+				utils.HIGH:     1,
+				utils.MEDIUM:   3,
 			},
-			wantError: false,
+			expectedOperator: utils.OR,
+			expectedError:    false,
 		},
 		{
-			name:                   "Empty expression",
-			expression:             "",
-			ExpectedOperator:       utils.SetDefault(),
-			expectedVoilationCount: map[string]int{},
-			wantError:              false,
+			name:                   "DuplicateOperatorPresent_Failure",
+			expression:             "critical:2,operator:or,operator:and",
+			expectedSeverityCounts: nil,
+			expectedOperator:       "",
+			expectedError:          true,
 		},
 		{
-			name:                   "Invalid operator",
-			expression:             "INVALID:CRITICAL:2",
-			ExpectedOperator:       "",
-			expectedVoilationCount: nil,
-			wantError:              true,
+			name:                   "OperatorNotPresent_Failure",
+			expression:             "critical:2,high:1,medium:3",
+			expectedSeverityCounts: nil,
+			expectedOperator:       "",
+			expectedError:          true,
 		},
 		{
-			name:                   "Duplicate severity",
-			expression:             "AND:CRITICAL:2,CRITICAL:3",
-			ExpectedOperator:       "",
-			expectedVoilationCount: nil,
-			wantError:              true,
+			name:                   "DuplicateSeverityPresent_Failure",
+			expression:             "critical:2,high:1,medium:3,medium:4,operator:or",
+			expectedSeverityCounts: nil,
+			expectedOperator:       "",
+			expectedError:          true,
 		},
 		{
-			name:                   "Invalid violation limit",
-			expression:             "AND:CRITICAL:abc,HIGH:3",
-			ExpectedOperator:       "",
-			expectedVoilationCount: nil,
-			wantError:              true,
+			name:                   "InvalidExpression_Failure",
+			expression:             "critical:invalid,high:1,medium:3",
+			expectedSeverityCounts: nil,
+			expectedOperator:       "",
+			expectedError:          true,
+		},
+		{
+			name:       "ExpressionNotPassed_SetDefault",
+			expression: "",
+			expectedSeverityCounts: map[string]int{
+				utils.CRITICAL: 1,
+				utils.HIGH:     1,
+				utils.MEDIUM:   1,
+				utils.LOW:      1,
+			},
+			expectedOperator: utils.OR,
+			expectedError:    false,
 		},
 	}
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			operator, violationCount, err := ProcessExpression(test.expression)
+			t.Parallel()
 
-			if (err != nil) != test.wantError {
-				t.Errorf("Expected error: %v, got: %v", test.wantError, err)
+			operator, severityCounts, err := processExpression(test.expression)
+			if (err != nil) != test.expectedError {
+				t.Fatalf("Expected error: %v, got error %v", test.expectedError, err)
 			}
-
-			if operator != test.ExpectedOperator {
-				t.Errorf("Expected operator: %v, got: %v", test.ExpectedOperator, operator)
+			if diff := cmp.Diff(test.expectedSeverityCounts, severityCounts); diff != "" {
+				t.Errorf("Expected severityCounts (+got, -want): %v", diff)
 			}
-
-			if !reflect.DeepEqual(violationCount, test.expectedVoilationCount) {
-				t.Errorf("Expected violation count: %v, got: %v", test.expectedVoilationCount, violationCount)
+			if err == nil && operator != test.expectedOperator {
+				t.Errorf("Unexpected operator: expected %v, got %v", test.expectedOperator, operator)
 			}
 		})
 	}

@@ -18,6 +18,10 @@ func ValidateOperator(finalOperator, expressionOperator string) (string, error) 
 }
 
 func All(failureCriteriaVoilations map[string]bool) bool {
+	if len(failureCriteriaVoilations) == 0 {
+		return false
+	}
+
 	for _, v := range failureCriteriaVoilations {
 		if !v {
 			return false
@@ -27,6 +31,10 @@ func All(failureCriteriaVoilations map[string]bool) bool {
 }
 
 func Any(failureCriteriaVoilations map[string]bool) bool {
+	if len(failureCriteriaVoilations) == 0 {
+		return false
+	}
+
 	for _, v := range failureCriteriaVoilations {
 		if v {
 			return true
