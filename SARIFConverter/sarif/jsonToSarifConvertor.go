@@ -20,7 +20,7 @@ import (
 	"fmt"
 
 	template "github.com/pritiprajapati314/IACPlugin2024/SARIFConverter/template"
-	constants "github.com/pritiprajapati314/IACPlugin2024/SARIFConverter/utils"
+	utils "github.com/pritiprajapati314/IACPlugin2024/SARIFConverter/utils"
 )
 
 // GenerateReport converts the SCC IAC validation report into SARIF format.
@@ -33,16 +33,16 @@ func GenerateReport(report template.IACValidationReport) (template.SarifOutput, 
 
 	results := constructResults(report.Violations)
 	sarifReport := template.SarifOutput{
-		Version: constants.SARIF_VERSION,
-		Schema:  constants.SARIF_SCHEMA,
+		Version: utils.SARIF_VERSION,
+		Schema:  utils.SARIF_SCHEMA,
 		Runs: []template.Run{
 			{
 				Note: report.Note,
 				Tool: template.Tool{
 					Driver: template.Driver{
-						Name:           constants.IAC_TOOL_NAME,
-						Version:        constants.VERSION,
-						InformationURI: constants.IAC_TOOL_DOCUMENTATION_LINK,
+						Name:           utils.IAC_TOOL_NAME,
+						Version:        utils.VERSION,
+						InformationURI: utils.IAC_TOOL_DOCUMENTATION_LINK,
 						Rules:          rules,
 					},
 				},
@@ -124,7 +124,7 @@ func constructResults(violations []template.Violation) []template.Result {
 }
 
 func validateSeverity(severity string) bool {
-	if severity != constants.CRITICAL && severity != constants.HIGH && severity != constants.MEDIUM && severity != constants.LOW {
+	if severity != utils.CRITICAL && severity != utils.HIGH && severity != utils.MEDIUM && severity != utils.LOW {
 		return false
 	}
 	return true
