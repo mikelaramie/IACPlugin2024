@@ -17,8 +17,8 @@
 package sarif
 
 import (
-	template "github.com/pritiprajapati314/IACPlugin2024/SARIFConverter/template"
-	constants "github.com/pritiprajapati314/IACPlugin2024/SARIFConverter/utils"
+	template "github.com/pritiprajapati314/IACPlugin2024/SARFConverter/template"
+	constants "github.com/pritiprajapati314/IACPlugin2024/SARFConverter/utils"
 )
 
 var IACValidationValidReport = template.IACValidationReport{
