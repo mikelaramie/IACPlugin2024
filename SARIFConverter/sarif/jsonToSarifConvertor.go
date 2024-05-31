@@ -41,7 +41,7 @@ func GenerateReport(report template.IACValidationReport) (template.SarifOutput, 
 				Tool: template.Tool{
 					Driver: template.Driver{
 						Name:           constants.IAC_TOOL_NAME,
-						Version:        constatns.VERSION,
+						Version:        constants.VERSION,
 						InformationURI: constants.IAC_TOOL_DOCUMENTATION_LINK,
 						Rules:          rules,
 					},
