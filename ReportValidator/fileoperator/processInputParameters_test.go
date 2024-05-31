@@ -43,15 +43,11 @@ func TestProcessExpression(t *testing.T) {
 			expectedError:    false,
 		},
 		{
-			name:       "ExpressionWithNegativeValue_Failure",
-			expression: "critical:2,high:1,medium:3,operator:or",
-			expectedSeverityCounts: map[string]int{
-				utils.CRITICAL: 2,
-				utils.HIGH:     1,
-				utils.MEDIUM:   3,
-			},
-			expectedOperator: utils.OR,
-			expectedError:    false,
+			name:                   "ExpressionWithNegativeValue_Failure",
+			expression:             "high:-1,operator:or",
+			expectedSeverityCounts: nil,
+			expectedOperator:       utils.OR,
+			expectedError:          true,
 		},
 		{
 			name:                   "DuplicateOperatorPresent_Failure",
