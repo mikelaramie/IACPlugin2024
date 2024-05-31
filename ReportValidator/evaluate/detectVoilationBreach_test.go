@@ -174,7 +174,7 @@ func TestIsViolatingSeverity(t *testing.T) {
 			}
 
 			if test.expectedBool != isVoilated {
-				t.Errorf("Unexpected output want: %s, got: %v", test.expectedBool, isVoilated)
+				t.Errorf("Unexpected output want: %v, got: %v", test.expectedBool, isVoilated)
 			}
 		})
 	}

@@ -17,6 +17,3 @@ In case the voilation expression is not passed as an input by the user default p
 - Example expression 
 
 ``` 'Critical:10,High:10,Medium:10,Low:10,Operator:or' ```
-
-
-
