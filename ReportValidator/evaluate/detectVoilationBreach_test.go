@@ -21,7 +21,7 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 
-	utils "github.com/pritiprajapati314/IACPlugin2024/validator/utils"
+	utils "github.com/pritiprajapati314/IACPlugin2024/ReportValidator/utils"
 )
 
 func TestComputeVoliationState(t *testing.T) {
