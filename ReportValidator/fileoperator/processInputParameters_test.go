@@ -95,7 +95,7 @@ func TestProcessExpression(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			operator, severityCounts, err := processExpression(test.expression)
+			operator, severityCounts, err := ProcessExpression(test.expression)
 			if (err != nil) != test.expectedError {
 				t.Fatalf("Expected error: %v, got error %v", test.expectedError, err)
 			}

@@ -12,19 +12,16 @@
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  See the License for the specific language governing permissions and
  limitations under the License.
- */
+*/
 
 package sarif
 
 import (
-	"fmt"
-	"reflect"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
 
 	template "github.com/pritiprajapati314/IACPlugin2024/SARIFConverter/template"
-	utils "github.com/pritiprajapati314/IACPlugin2024/SARIFConverter/utils"
 )
 
 func TestGenerateReport(t *testing.T) {
@@ -38,13 +35,13 @@ func TestGenerateReport(t *testing.T) {
 			Name:                "ValidReport_Succeeds",
 			IACValidationReport: IACValidationValidReport,
 			ExpectedOutput:      IACValidSarifOutput,
-			ExpectedError false,
+			ExpectedError:       false,
 		},
 		{
 			Name:                "InvalidSeverityReport_Failure",
 			IACValidationReport: IACValidationReportWithInvalidSeverity,
-			ExpectedOutput:      nil,
-			ExpectedError: true,
+			ExpectedOutput:      template.SarifOutput{},
+			ExpectedError:       true,
 		},
 	}
 

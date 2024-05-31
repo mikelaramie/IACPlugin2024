@@ -84,7 +84,7 @@ var IACValidSarifOutput = template.SarifOutput{
 			Tool: template.Tool{
 				Driver: template.Driver{
 					Name:           constants.IAC_TOOL_NAME,
-					Version:        "*******INCORRECT NEEDS TO BE CORRECTED*******",
+					Version:        "1.0.0",
 					InformationURI: constants.IAC_TOOL_DOCUMENTATION_LINK,
 					Rules: []template.Rule{
 						{
