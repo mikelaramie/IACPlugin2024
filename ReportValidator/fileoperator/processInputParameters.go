@@ -77,11 +77,11 @@ func ProcessExpression(expression string) (string, map[string]int, error) {
 
 		value, err := strconv.Atoi(parts[1])
 		if err != nil {
-			return "", nil, fmt.Errorf("Error converting value to integer: %v", err)
+			return "", nil, fmt.Errorf("error converting value to integer: %v", err)
 		}
 
 		if value < 0 {
-			return "", nil, fmt.Errorf("Validation expression can not have negative values!")
+			return "", nil, fmt.Errorf("validation expression can not have negative values!")
 		}
 
 		userVoilationCount[key] = value
