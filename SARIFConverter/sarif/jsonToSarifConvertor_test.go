@@ -23,8 +23,8 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 
-	template "github.com/pritiprajapati314/IACPlugin2024/SARFConverter/template"
-	utils "github.com/pritiprajapati314/IACPlugin2024/SARFConverter/utils"
+	template "github.com/pritiprajapati314/IACPlugin2024/SARIFConverter/template"
+	utils "github.com/pritiprajapati314/IACPlugin2024/SARIFConverter/utils"
 )
 
 func TestGenerateReport(t *testing.T) {

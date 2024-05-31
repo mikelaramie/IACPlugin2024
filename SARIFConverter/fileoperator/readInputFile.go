@@ -21,7 +21,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/pritiprajapati314/IACPlugin2024/SARFConverter/template"
+	"github.com/pritiprajapati314/IACPlugin2024/SARIFConverter/template"
 )
 
 func FetchIACScanReport(filePath *string) (template.IACReportTemplate, error) {
