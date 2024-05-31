@@ -14,6 +14,7 @@
  limitations under the License.
 */
 
+// Package fileoperator offers functions for reading and writing files
 package fileoperator
 
 import (
@@ -24,6 +25,7 @@ import (
 	"github.com/pritiprajapati314/IACPlugin2024/SARIFConverter/template"
 )
 
+// FetchIACScanReport reads the SCC IAC validation report passed as an input.
 func FetchIACScanReport(filePath *string) (template.IACReportTemplate, error) {
 	var iacReport template.IACReportTemplate
 

@@ -22,7 +22,6 @@ type IACReportTemplate struct {
 	Response Responses `json:"response,omitempty"`
 }
 
-// Response is the response of the IAC Scan report.
 type Responses struct {
 	Name                string              `json:"name,omitempty"`
 	CreateTime          string              `json:"createTime,omitempty"`
@@ -35,7 +34,6 @@ type IACValidationReport struct {
 	Note       string      `json:"note,omitempty"`
 }
 
-// Violation is a violation of the Sarif template.
 type Violation struct {
 	AssetID         string         `json:"assetId,omitempty"`
 	PolicyID        string         `json:"policyId,omitempty"`
@@ -61,7 +59,6 @@ type PolicyDetails struct {
 	Description         string   `json:"description,omitempty"`
 }
 
-// AssetDetails is an asset of the Sarif template.
 type AssetDetails struct {
 	Asset     string `json:"asset,omitempty"`
 	AssetType string `json:"assetType,omitempty"`

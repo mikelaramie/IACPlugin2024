@@ -23,6 +23,7 @@ import (
 	constants "github.com/pritiprajapati314/IACPlugin2024/SARIFConverter/utils"
 )
 
+// GenerateReport converts the SCC IAC validation report into SARIF format.
 func GenerateReport(report template.IACValidationReport) (template.SarifOutput, error) {
 	policyToViolationMap := getUniqueViolations(report.Violations)
 	rules, err := constructRules(policyToViolationMap)

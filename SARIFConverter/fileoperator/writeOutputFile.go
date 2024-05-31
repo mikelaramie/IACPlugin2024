@@ -24,6 +24,7 @@ import (
 	"github.com/pritiprajapati314/IACPlugin2024/SARIFConverter/template"
 )
 
+// WriteSarifReport writes the SARIF report to output file.
 func WriteSarifReport(sarifReport template.SarifOutput, outputFilePath *string) error {
 	sarifJSON, err := json.MarshalIndent(sarifReport, "", "  ")
 	if err != nil {
