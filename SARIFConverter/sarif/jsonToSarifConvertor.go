@@ -26,12 +26,14 @@ import (
 // GenerateReport converts the SCC IAC validation report into SARIF format.
 func GenerateReport(report template.IACValidationReport) (template.SarifOutput, error) {
 	policyToViolationMap := getUniqueViolations(report.Violations)
+
 	rules, err := constructRules(policyToViolationMap)
 	if err != nil {
 		return template.SarifOutput{}, fmt.Errorf("constructRules: %v", err)
 	}
 
 	results := constructResults(report.Violations)
+
 	sarifReport := template.SarifOutput{
 		Version: utils.SARIF_VERSION,
 		Schema:  utils.SARIF_SCHEMA,
@@ -50,11 +52,13 @@ func GenerateReport(report template.IACValidationReport) (template.SarifOutput, 
 			},
 		},
 	}
+
 	return sarifReport, nil
 }
 
 func getUniqueViolations(violations []template.Violation) map[string]template.Violation {
 	policyToViolationMap := make(map[string]template.Violation)
+
 	for _, violation := range violations {
 		policyID := violation.PolicyID
 		if _, ok := policyToViolationMap[policyID]; !ok {
@@ -67,6 +71,7 @@ func getUniqueViolations(violations []template.Violation) map[string]template.Vi
 
 func constructRules(policyToViolationMap map[string]template.Violation) ([]template.Rule, error) {
 	rules := []template.Rule{}
+
 	for policyID, violation := range policyToViolationMap {
 		if !validateSeverity(violation.Severity) {
 			return nil, fmt.Errorf("validateSeverity() invalid severity: %s ", violation.Severity)
@@ -92,11 +97,13 @@ func constructRules(policyToViolationMap map[string]template.Violation) ([]templ
 
 		rules = append(rules, rule)
 	}
+
 	return rules, nil
 }
 
 func constructResults(violations []template.Violation) []template.Result {
 	results := []template.Result{}
+
 	for _, violation := range violations {
 		result := template.Result{
 			RuleID: violation.PolicyID,
@@ -120,6 +127,7 @@ func constructResults(violations []template.Violation) []template.Result {
 		}
 		results = append(results, result)
 	}
+
 	return results
 }
 
@@ -127,5 +135,6 @@ func validateSeverity(severity string) bool {
 	if severity != utils.CRITICAL && severity != utils.HIGH && severity != utils.MEDIUM && severity != utils.LOW {
 		return false
 	}
+
 	return true
 }

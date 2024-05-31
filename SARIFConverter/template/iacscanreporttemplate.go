@@ -14,10 +14,10 @@
  limitations under the License.
 */
 
-// Package iacTemplate contains the template template for IAC Scan report.
+// Package iacTemplate contains the template for SCC IAC validation report.
 package template
 
-// IACReportTemplate is the template for IAC Scan report.
+// IACReportTemplate is the template for SCC IAC validation report.
 type IACReportTemplate struct {
 	Response Responses `json:"response,omitempty"`
 }
