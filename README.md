@@ -6,7 +6,8 @@ scc-iac-scan-report-utils provide scripts for optional steps for AOSS's IAC Scan
 
 ## SARIFConverter
 
-sarif converter takes converters teh IaC scanning result format to the more popular SARIF format and uploads it to Google Cloud Storage.
+sarif converter converters the IaC scanning result format to the more popular SARIF format
+and uploads it to the Google Cloud Storage artifact registry bucket.
 
 ## Validator
 

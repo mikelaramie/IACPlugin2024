@@ -24,6 +24,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 
 	template "github.com/pritiprajapati314/IACPlugin2024/sarifconverter/template"
+	utils "github.com/pritiprajapati314/IACPlugin2024/sarifconverter/utils"
 )
 
 func TestGenerateReport(t *testing.T) {
