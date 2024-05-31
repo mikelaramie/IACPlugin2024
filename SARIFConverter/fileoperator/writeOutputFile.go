@@ -42,7 +42,5 @@ func WriteSarifReport(sarifReport template.SarifOutput, outputFilePath *string) 
 		return fmt.Errorf("outputJSON.Write: %v", err)
 	}
 
-	fmt.Println(*outputFilePath)
-
 	return nil
 }
