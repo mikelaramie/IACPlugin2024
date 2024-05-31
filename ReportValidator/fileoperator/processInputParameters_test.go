@@ -20,7 +20,7 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
-	"github.com/pritiprajapati314/IACPlugin2024/validator/utils"
+	"github.com/pritiprajapati314/IACPlugin2024/ReportValidator/utils"
 )
 
 func TestProcessExpression(t *testing.T) {

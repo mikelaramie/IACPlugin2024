@@ -23,7 +23,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/pritiprajapati314/IACPlugin2024/validator/utils"
+	"github.com/pritiprajapati314/IACPlugin2024/ReportValidator/utils"
 )
 
 func FetchVoilationFromInputFile(filePath *string) (map[string]int, error) {
