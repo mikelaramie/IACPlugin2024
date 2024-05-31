@@ -31,15 +31,15 @@ func TestValidateOperator(t *testing.T) {
 		{
 			name:               "AndOperator_Succeeds",
 			operator:           "",
-			expressionOperator: utils.AND,
-			expectedOperator:   utils.AND,
+			expressionOperator: AND,
+			expectedOperator:   AND,
 			wantError:          false,
 		},
 		{
 			name:               "OrOperator_Succeeds",
 			operator:           "",
-			expressionOperator: utils.OR,
-			expectedOperator:   utils.OR,
+			expressionOperator: OR,
+			expectedOperator:   OR,
 			wantError:          false,
 		},
 		{
@@ -51,8 +51,8 @@ func TestValidateOperator(t *testing.T) {
 		},
 		{
 			name:               "OperatorAlreadySet_Failure",
-			operator:           utils.AND,
-			expressionOperator: utils.OR,
+			operator:           AND,
+			expressionOperator: OR,
 			expectedOperator:   "",
 			wantError:          true,
 		},
@@ -62,7 +62,7 @@ func TestValidateOperator(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			operator, err := utils.ValidateOperator(test.operator, test.expressionOperator)
+			operator, err := ValidateOperator(test.operator, test.expressionOperator)
 			if (err != nil) != test.wantError {
 				t.Errorf("Expected error: %v, got: %v", test.wantError, err)
 			}
