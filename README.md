@@ -18,7 +18,7 @@ the limits based on some failure criteria.
 
     ``` 'Critical:2,Low:5,Operator:or' ```
 
-If no expression is passed to the scipt. default criteria is used to perform these validation
+- If no expression is passed to the scipt. default criteria is used to perform these validation
 
 ``` 'Critical:1,High:1,Medium:1,Low:1,Operator:or' ```
 
