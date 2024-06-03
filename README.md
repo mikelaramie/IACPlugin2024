@@ -18,9 +18,9 @@ It checks the scc iac-validation-report against limits set by failure criteria a
 
     ``` 'Critical:2,Low:5,Operator:or' ```
 
-- If no expression is passed to the scipt. default criteria is used to perform these validation
+- If no expression is passed to the scipt following default criteria is used to perform these validation.
 
-``` 'Critical:1,High:1,Medium:1,Low:1,Operator:or' ```
+    ``` 'Critical:1,High:1,Medium:1,Low:1,Operator:or' ```
 
 > [!NOTE]
 > - For Operator only AND and OR operators are supported.
