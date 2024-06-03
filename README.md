@@ -15,19 +15,18 @@ It runs some validation on the SCC IAC report and returns the status of these va
 the limits based on some failure criteria.
 
 - These validation failure criteria could be passed as an expression in a form of input to the script.
-    - Example expression 
 
-    ``` 'Critical:10,High:10,Medium:10,Low:10,Operator:or' ```
+    ``` 'Critical:2,Low:5,Operator:or' ```
 
 If no expression is passed to the scipt. default criteria is used to perform these validation
 
 ``` 'Critical:1,High:1,Medium:1,Low:1,Operator:or' ```
 
 > [!NOTE]
-> For Operator only AND and OR operators is supported.
-> The expression is case insensitive.
-> Each expression should have an operator once.
-> All Severity: Critical, High, Medium, Low can be present in the expression at most once.
+> - For Operator only AND and OR operators is supported.
+> - The expression is case insensitive.
+> - Each expression should have an operator once.
+> - All Severity: Critical, High, Medium, Low can be present in the expression at most once.
 
 
 
