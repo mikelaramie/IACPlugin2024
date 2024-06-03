@@ -23,9 +23,8 @@ It checks the scc iac-validation-report against limits set by failure criteria a
 ``` 'Critical:1,High:1,Medium:1,Low:1,Operator:or' ```
 
 > [!NOTE]
-> - For Operator only AND and OR operators is supported.
-> - The expression is case insensitive.
-> - Each expression should have an operator once.
+> - For Operator only AND and OR operators are supported.
+> - Each expression should have an operator only once.
 > - All Severity: Critical, High, Medium, Low can be present in the expression at most once.
 
 
