@@ -21,7 +21,6 @@ import (
 	"strings"
 
 	"github.com/pritiprajapati314/IACPlugin2024/ReportValidator/fileoperator"
-	"github.com/pritiprajapati314/IACPlugin2024/ReportValidator/utils"
 )
 
 func IsIACScanReportVoilatingSeverity(filePath, expression *string) (bool, error) {
