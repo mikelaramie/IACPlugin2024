@@ -48,29 +48,29 @@ func computeVoliationState(severityCounts map[string]int, userVoilationCount map
 	for k, violationLimit := range userVoilationCount {
 		severity := strings.ToUpper(k)
 		switch severity {
-		case utils.CRITICAL:
-			if severityCounts[utils.CRITICAL] > violationLimit {
-				failureCriteriaVoilations[utils.CRITICAL] = true
+		case "CRITICAL":
+			if severityCounts["CRITICAL"] > violationLimit {
+				failureCriteriaVoilations["CRITICAL"] = true
 			} else {
-				failureCriteriaVoilations[utils.CRITICAL] = false
+				failureCriteriaVoilations["CRITICAL"] = false
 			}
-		case utils.HIGH:
-			if severityCounts[utils.HIGH] > violationLimit {
-				failureCriteriaVoilations[utils.HIGH] = true
+		case "HIGH":
+			if severityCounts["HIGH"] > violationLimit {
+				failureCriteriaVoilations["HIGH"] = true
 			} else {
-				failureCriteriaVoilations[utils.HIGH] = false
+				failureCriteriaVoilations["HIGH"] = false
 			}
-		case utils.MEDIUM:
-			if severityCounts[utils.MEDIUM] > violationLimit {
-				failureCriteriaVoilations[utils.MEDIUM] = true
+		case "MEDIUM":
+			if severityCounts["MEDIUM"] > violationLimit {
+				failureCriteriaVoilations["MEDIUM"] = true
 			} else {
-				failureCriteriaVoilations[utils.MEDIUM] = false
+				failureCriteriaVoilations["MEDIUM"] = false
 			}
-		case utils.LOW:
-			if severityCounts[utils.LOW] > violationLimit {
-				failureCriteriaVoilations[utils.LOW] = true
+		case "LOW":
+			if severityCounts["LOW"] > violationLimit {
+				failureCriteriaVoilations["LOW"] = true
 			} else {
-				failureCriteriaVoilations[utils.LOW] = false
+				failureCriteriaVoilations["LOW"] = false
 			}
 		default:
 			return nil, fmt.Errorf("invalid severity expression: %v", severity)
@@ -82,9 +82,9 @@ func computeVoliationState(severityCounts map[string]int, userVoilationCount map
 
 func isViolatingSeverity(operator string, failureCriteriaVoilations map[string]bool) (bool, error) {
 	switch operator {
-	case utils.AND:
+	case "AND":
 		return all(failureCriteriaVoilations), nil
-	case utils.OR:
+	case "OR":
 		return any(failureCriteriaVoilations), nil
 	default:
 		return true, fmt.Errorf("invalid severity operator: %v", operator)
