@@ -20,8 +20,6 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
-
-	utils "github.com/pritiprajapati314/IACPlugin2024/ReportValidator/utils"
 )
 
 func TestComputeVoliationState(t *testing.T) {
@@ -35,55 +33,55 @@ func TestComputeVoliationState(t *testing.T) {
 		{
 			name: "CriticalAndHighLevelSeverityExcceeded",
 			severityCounts: map[string]int{
-				utils.CRITICAL: 2,
-				utils.HIGH:     2,
-				utils.MEDIUM:   0,
-				utils.LOW:      0,
+				"CRITICAL": 2,
+				"HIGH":     2,
+				"MEDIUM":   0,
+				"LOW":      0,
 			},
 			userVoilationCount: map[string]int{
-				utils.CRITICAL: 1,
-				utils.HIGH:     1,
-				utils.MEDIUM:   0,
+				"CRITICAL": 1,
+				"HIGH":     1,
+				"MEDIUM":   0,
 			},
 			expectedFailureCriteriaVoilations: map[string]bool{
-				utils.CRITICAL: true,
-				utils.HIGH:     true,
-				utils.MEDIUM:   false,
+				"CRITICAL": true,
+				"HIGH":     true,
+				"MEDIUM":   false,
 			},
 			wantErr: false,
 		},
 		{
 			name: "MediumAndLowLevelSeverityExcceeded",
 			severityCounts: map[string]int{
-				utils.CRITICAL: 0,
-				utils.MEDIUM:   3,
-				utils.LOW:      2,
+				"CRITICAL": 0,
+				"MEDIUM":   3,
+				"LOW":      2,
 			},
 			userVoilationCount: map[string]int{
-				utils.CRITICAL: 0,
-				utils.HIGH:     0,
-				utils.MEDIUM:   1,
-				utils.LOW:      1,
+				"CRITICAL": 0,
+				"HIGH":     0,
+				"MEDIUM":   1,
+				"LOW":      1,
 			},
 			expectedFailureCriteriaVoilations: map[string]bool{
-				utils.LOW:      true,
-				utils.MEDIUM:   true,
-				utils.HIGH:     false,
-				utils.CRITICAL: false,
+				"LOW":      true,
+				"MEDIUM":   true,
+				"HIGH":     false,
+				"CRITICAL": false,
 			},
 			wantErr: false,
 		},
 		{
 			name: "InvalidSeverity_Error",
 			severityCounts: map[string]int{
-				utils.CRITICAL: 2,
-				utils.HIGH:     1,
-				utils.MEDIUM:   0,
+				"CRITICAL": 2,
+				"HIGH":     1,
+				"MEDIUM":   0,
 			},
 			userVoilationCount: map[string]int{
-				utils.CRITICAL: 1,
-				utils.HIGH:     2,
-				utils.MEDIUM:   1,
+				"CRITICAL": 1,
+				"HIGH":     2,
+				"MEDIUM":   1,
 				"invalid":      3,
 			},
 			expectedFailureCriteriaVoilations: nil,
@@ -117,27 +115,27 @@ func TestIsViolatingSeverity(t *testing.T) {
 	}{
 		{
 			name:     "ANDOperator_SeverityNotViolated",
-			operator: utils.AND,
+			operator: "AND",
 			failureCriteriaVoilations: map[string]bool{
-				utils.MEDIUM: true,
-				utils.HIGH:   false,
+				"MEDIUM": true,
+				"HIGH":   false,
 			},
 			expectedBool: false,
 			wantErr:      false,
 		},
 		{
 			name:     "ANDOperator_SeverityViolated",
-			operator: utils.AND,
+			operator: "AND",
 			failureCriteriaVoilations: map[string]bool{
-				utils.MEDIUM: true,
-				utils.HIGH:   true,
+				"MEDIUM": true,
+				"HIGH":   true,
 			},
 			expectedBool: true,
 			wantErr:      false,
 		},
 		{
 			name:     "OROperator_SeverityNotViolated",
-			operator: utils.OR,
+			operator: "OR",
 			failureCriteriaVoilations: map[string]bool{
 				"key1": false,
 				"key2": false,
@@ -147,7 +145,7 @@ func TestIsViolatingSeverity(t *testing.T) {
 		},
 		{
 			name:     "OROperator_SeverityViolated",
-			operator: utils.OR,
+			operator: "OR",
 			failureCriteriaVoilations: map[string]bool{
 				"key1": true,
 				"key2": false,
@@ -175,6 +173,74 @@ func TestIsViolatingSeverity(t *testing.T) {
 
 			if test.expectedBool != isVoilated {
 				t.Errorf("Unexpected output want: %v, got: %v", test.expectedBool, isVoilated)
+			}
+		})
+	}
+}
+
+func TestAll(t *testing.T) {
+	tests := []struct {
+		name           string
+		input          map[string]bool
+		expectedOutput bool
+	}{
+		{
+			name:           "AllTrue",
+			input:          map[string]bool{"CRITICAL": true, "HIGH": true, "LOW": true},
+			expectedOutput: true,
+		},
+		{
+			name:           "AllNotTrue",
+			input:          map[string]bool{"HIGH": true, "LOW": false, "MEDIUM": true},
+			expectedOutput: false,
+		},
+		{
+			name:           "EmptyMap",
+			input:          map[string]bool{},
+			expectedOutput: false,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+			actualOutput := all(test.input)
+			if actualOutput != test.expectedOutput {
+				t.Errorf("Expected output: %v, got: %v", test.expectedOutput, actualOutput)
+			}
+		})
+	}
+}
+
+func TestAny(t *testing.T) {
+	tests := []struct {
+		name           string
+		input          map[string]bool
+		expectedOutput bool
+	}{
+		{
+			name:           "OneTrue",
+			input:          map[string]bool{"CRITICAL": true, "HIGH": false, "LOW": false},
+			expectedOutput: true,
+		},
+		{
+			name:           "AllFalse",
+			input:          map[string]bool{"HIGH": false, "MEDIUM": false, "LOW": false},
+			expectedOutput: false,
+		},
+		{
+			name:           "EmptyMap",
+			input:          map[string]bool{},
+			expectedOutput: false,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+			actualOutput := any(test.input)
+			if actualOutput != test.expectedOutput {
+				t.Errorf("Expected output: %v, got: %v", test.expectedOutput, actualOutput)
 			}
 		})
 	}

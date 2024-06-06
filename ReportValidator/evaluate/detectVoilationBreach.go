@@ -47,7 +47,7 @@ func computeVoliationState(severityCounts map[string]int, userVoilationCount map
 	failureCriteriaVoilations := make(map[string]bool)
 
 	for k, violationLimit := range userVoilationCount {
-		severity := strings.ToLower(k)
+		severity := strings.ToUpper(k)
 		switch severity {
 		case utils.CRITICAL:
 			if severityCounts[utils.CRITICAL] > violationLimit {
@@ -74,7 +74,7 @@ func computeVoliationState(severityCounts map[string]int, userVoilationCount map
 				failureCriteriaVoilations[utils.LOW] = false
 			}
 		default:
-			return nil, fmt.Errorf("Invalid severity expression: %v", severity)
+			return nil, fmt.Errorf("invalid severity expression: %v", severity)
 		}
 	}
 
@@ -84,10 +84,36 @@ func computeVoliationState(severityCounts map[string]int, userVoilationCount map
 func isViolatingSeverity(operator string, failureCriteriaVoilations map[string]bool) (bool, error) {
 	switch operator {
 	case utils.AND:
-		return utils.All(failureCriteriaVoilations), nil
+		return all(failureCriteriaVoilations), nil
 	case utils.OR:
-		return utils.Any(failureCriteriaVoilations), nil
+		return any(failureCriteriaVoilations), nil
 	default:
-		return true, fmt.Errorf("Invalid severity operator: %v", operator)
+		return true, fmt.Errorf("invalid severity operator: %v", operator)
 	}
+}
+
+func all(failureCriteriaVoilations map[string]bool) bool {
+	if len(failureCriteriaVoilations) == 0 {
+		return false
+	}
+
+	for _, v := range failureCriteriaVoilations {
+		if !v {
+			return false
+		}
+	}
+	return true
+}
+
+func any(failureCriteriaVoilations map[string]bool) bool {
+	if len(failureCriteriaVoilations) == 0 {
+		return false
+	}
+
+	for _, v := range failureCriteriaVoilations {
+		if v {
+			return true
+		}
+	}
+	return false
 }

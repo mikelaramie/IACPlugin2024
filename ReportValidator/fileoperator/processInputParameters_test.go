@@ -108,3 +108,57 @@ func TestProcessExpression(t *testing.T) {
 		})
 	}
 }
+
+func TestValidateOperator(t *testing.T) {
+	tests := []struct {
+		name               string
+		operator           string
+		expressionOperator string
+		expectedOperator   string
+		wantError          bool
+	}{
+		{
+			name:               "AndOperator_Succeeds",
+			operator:           "",
+			expressionOperator: "AND",
+			expectedOperator:   "AND",
+			wantError:          false,
+		},
+		{
+			name:               "OrOperator_Succeeds",
+			operator:           "",
+			expressionOperator: "OR",
+			expectedOperator:   "OR",
+			wantError:          false,
+		},
+		{
+			name:               "InvalidOperator_Failure",
+			operator:           "",
+			expressionOperator: "NOT",
+			expectedOperator:   "",
+			wantError:          true,
+		},
+		{
+			name:               "OperatorAlreadySet_Failure",
+			operator:           "AND",
+			expressionOperator: "OR",
+			expectedOperator:   "",
+			wantError:          true,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+
+			operator, err := validateOperator(test.operator, test.expressionOperator)
+			if (err != nil) != test.wantError {
+				t.Errorf("Expected error: %v, got: %v", test.wantError, err)
+			}
+
+			if operator != test.expectedOperator {
+				t.Errorf("Expected operator: %v, got: %v", test.expectedOperator, operator)
+			}
+		})
+	}
+}

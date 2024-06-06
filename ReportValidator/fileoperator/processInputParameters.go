@@ -22,12 +22,20 @@ import (
 	"os"
 	"strconv"
 	"strings"
-
-	"github.com/pritiprajapati314/IACPlugin2024/ReportValidator/utils"
 )
 
+type IACScanReport struct {
+	Response struct {
+		IACValidationReport struct {
+			Violations []struct {
+				Severity string `json:"severity"`
+			} `json:"violations"`
+		} `json:"iacValidationReport"`
+	} `json:"response"`
+}
+
 func FetchVoilationFromInputFile(filePath *string) (map[string]int, error) {
-	var violationlist utils.IACScanReport
+	var violationlist IACScanReport
 
 	data, err := os.ReadFile(*filePath)
 	if err != nil {
@@ -36,13 +44,13 @@ func FetchVoilationFromInputFile(filePath *string) (map[string]int, error) {
 
 	err = json.Unmarshal(data, &violationlist)
 	if err != nil {
-		return nil, fmt.Errorf("Error decoding JSON: %v", err)
+		return nil, fmt.Errorf("json.Unmarshal: %v", err)
 	}
 
 	severityCounts := make(map[string]int)
 
 	for _, v := range violationlist.Response.IACValidationReport.Violations {
-		severityCounts[strings.ToLower(v.Severity)]++
+		severityCounts[strings.ToUpper(v.Severity)]++
 	}
 
 	return severityCounts, nil
@@ -52,7 +60,7 @@ func ProcessExpression(expression string) (string, map[string]int, error) {
 	pairs := strings.Split(expression, ",")
 
 	if expression == "" {
-		return utils.SetDefault()
+		return setDefault()
 	}
 
 	var operator = ""
@@ -60,10 +68,10 @@ func ProcessExpression(expression string) (string, map[string]int, error) {
 
 	for _, pair := range pairs {
 		parts := strings.Split(pair, ":")
-		key := strings.ToLower(parts[0])
+		key := strings.ToUpper(parts[0])
 
 		if key == "operator" {
-			op, err := utils.ValidateOperator(operator, strings.ToLower(parts[1]))
+			op, err := validateOperator(operator, strings.ToUpper(parts[1]))
 			if err != nil {
 				return "", nil, err
 			}
@@ -81,7 +89,7 @@ func ProcessExpression(expression string) (string, map[string]int, error) {
 		}
 
 		if value < 0 {
-			return "", nil, fmt.Errorf("validation expression can not have negative values!")
+			return "", nil, fmt.Errorf("validation expression can not have negative values")
 		}
 
 		userVoilationCount[key] = value
@@ -93,3 +101,27 @@ func ProcessExpression(expression string) (string, map[string]int, error) {
 
 	return operator, userVoilationCount, nil
 }
+
+func validateOperator(finalOperator, expressionOperator string) (string, error) {
+	if finalOperator != "" {
+		return "", fmt.Errorf("more than one operator found in the expression %v", finalOperator)
+	}
+
+	if expressionOperator != "AND" && expressionOperator != "OR" {
+		return "", fmt.Errorf("invalid operator: %v", finalOperator)
+	}
+
+	return expressionOperator, nil
+}
+
+func setDefault() (string, map[string]int, error) {
+	userVoilationCount := make(map[string]int)
+	userVoilationCount["CRITICAL"] = 1
+	userVoilationCount["HIGH"] = 1
+	userVoilationCount["MEDIUM"] = 1
+	userVoilationCount["LOW"] = 1
+	operator := "OR"
+
+	return operator, userVoilationCount, nil
+}
+
