@@ -14,11 +14,10 @@
  limitations under the License.
 */
 
-package sarif
+package converter
 
 import (
 	template "github.com/pritiprajapati314/IACPlugin2024/SARIFConverter/template"
-	constants "github.com/pritiprajapati314/IACPlugin2024/SARIFConverter/utils"
 )
 
 var IACValidationValidReport = template.IACValidationReport{
@@ -76,16 +75,16 @@ var IACValidationReportWithInvalidSeverity = template.IACValidationReport{
 }
 
 var IACValidSarifOutput = template.SarifOutput{
-	Version: constants.SARIF_VERSION,
-	Schema:  constants.SARIF_SCHEMA,
+	Version: SARIF_VERSION,
+	Schema:  SARIF_SCHEMA,
 	Runs: []template.Run{
 		{
 			Note: "Test Note",
 			Tool: template.Tool{
 				Driver: template.Driver{
-					Name:           constants.IAC_TOOL_NAME,
+					Name:           IAC_TOOL_NAME,
 					Version:        "1.0.0",
-					InformationURI: constants.IAC_TOOL_DOCUMENTATION_LINK,
+					InformationURI: IAC_TOOL_DOCUMENTATION_LINK,
 					Rules: []template.Rule{
 						{
 							ID:              "P1",

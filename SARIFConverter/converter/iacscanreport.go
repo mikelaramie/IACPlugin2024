@@ -14,17 +14,24 @@
  limitations under the License.
 */
 
-package sarif
+package converter
 
 import (
 	"fmt"
 
 	template "github.com/pritiprajapati314/IACPlugin2024/SARIFConverter/template"
-	utils "github.com/pritiprajapati314/IACPlugin2024/SARIFConverter/utils"
 )
 
-// GenerateReport converts the SCC IAC validation report into SARIF format.
-func GenerateReport(report template.IACValidationReport) (template.SarifOutput, error) {
+const (
+	VERSION                     = "1.0.0"
+	SARIF_SCHEMA                = "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json"
+	SARIF_VERSION               = "2.1.0"
+	IAC_TOOL_DOCUMENTATION_LINK = ""
+	IAC_TOOL_NAME               = "analyze-code-security-scc"
+)
+
+// FromIACScanReport converts the SCC IAC validation report into SARIF format.
+func FromIACScanReport(report template.IACValidationReport) (template.SarifOutput, error) {
 	policyToViolationMap := getUniqueViolations(report.Violations)
 
 	rules, err := constructRules(policyToViolationMap)
@@ -35,16 +42,16 @@ func GenerateReport(report template.IACValidationReport) (template.SarifOutput, 
 	results := constructResults(report.Violations)
 
 	sarifReport := template.SarifOutput{
-		Version: utils.SARIF_VERSION,
-		Schema:  utils.SARIF_SCHEMA,
+		Version: SARIF_VERSION,
+		Schema:  SARIF_SCHEMA,
 		Runs: []template.Run{
 			{
 				Note: report.Note,
 				Tool: template.Tool{
 					Driver: template.Driver{
-						Name:           utils.IAC_TOOL_NAME,
-						Version:        utils.VERSION,
-						InformationURI: utils.IAC_TOOL_DOCUMENTATION_LINK,
+						Name:           IAC_TOOL_NAME,
+						Version:        VERSION,
+						InformationURI: IAC_TOOL_DOCUMENTATION_LINK,
 						Rules:          rules,
 					},
 				},
@@ -132,7 +139,7 @@ func constructResults(violations []template.Violation) []template.Result {
 }
 
 func validateSeverity(severity string) bool {
-	if severity != utils.CRITICAL && severity != utils.HIGH && severity != utils.MEDIUM && severity != utils.LOW {
+	if severity != "CRITICAL" && severity != "HIGH" && severity != "MEDIUM" && severity != "LOW" {
 		return false
 	}
 

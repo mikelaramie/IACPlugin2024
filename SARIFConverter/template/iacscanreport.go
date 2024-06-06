@@ -17,7 +17,7 @@
 // Package iacTemplate contains the template for SCC IAC validation report.
 package template
 
-// IACReportTemplate is the template for SCC IAC validation report.
+// IACReportTemplate is the SCC IAC validation report template passed as an input.
 type IACReportTemplate struct {
 	Response Responses `json:"response,omitempty"`
 }

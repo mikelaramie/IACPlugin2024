@@ -14,7 +14,7 @@
  limitations under the License.
 */
 
-package sarif
+package converter
 
 import (
 	"testing"
@@ -47,7 +47,7 @@ func TestGenerateReport(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.Name, func(t *testing.T) {
-			actualOutput, err := GenerateReport(test.IACValidationReport)
+			actualOutput, err := FromIACScanReport(test.IACValidationReport)
 
 			if (err != nil) != test.ExpectedError {
 				t.Errorf("Expected error: %v, got: %v", test.ExpectedError, err)
