@@ -124,4 +124,3 @@ func setDefault() (string, map[string]int, error) {
 
 	return operator, userVoilationCount, nil
 }
-
