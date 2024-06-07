@@ -20,7 +20,6 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
-	"github.com/pritiprajapati314/IACPlugin2024/ReportValidator/utils"
 )
 
 func TestProcessExpression(t *testing.T) {
@@ -35,18 +34,18 @@ func TestProcessExpression(t *testing.T) {
 			name:       "Succeeds",
 			expression: "critical:2,high:1,medium:3,operator:or",
 			expectedSeverityCounts: map[string]int{
-				utils.CRITICAL: 2,
-				utils.HIGH:     1,
-				utils.MEDIUM:   3,
+				"CRITICAL": 2,
+				"HIGH":     1,
+				"MEDIUM":   3,
 			},
-			expectedOperator: utils.OR,
+			expectedOperator: "OR",
 			expectedError:    false,
 		},
 		{
 			name:                   "ExpressionWithNegativeValue_Failure",
 			expression:             "high:-1,operator:or",
 			expectedSeverityCounts: nil,
-			expectedOperator:       utils.OR,
+			expectedOperator:       "OR",
 			expectedError:          true,
 		},
 		{
@@ -81,12 +80,12 @@ func TestProcessExpression(t *testing.T) {
 			name:       "ExpressionNotPassed_SetDefault",
 			expression: "",
 			expectedSeverityCounts: map[string]int{
-				utils.CRITICAL: 1,
-				utils.HIGH:     1,
-				utils.MEDIUM:   1,
-				utils.LOW:      1,
+				"CRITICAL": 1,
+				"HIGH":     1,
+				"MEDIUM":   1,
+				"LOW":      1,
 			},
-			expectedOperator: utils.OR,
+			expectedOperator: "OR",
 			expectedError:    false,
 		},
 	}
