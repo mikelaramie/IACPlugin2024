@@ -70,7 +70,7 @@ func ProcessExpression(expression string) (string, map[string]int, error) {
 		parts := strings.Split(pair, ":")
 		key := strings.ToUpper(parts[0])
 
-		if key == "operator" {
+		if key == "OPERATOR" {
 			op, err := validateOperator(operator, strings.ToUpper(parts[1]))
 			if err != nil {
 				return "", nil, err
