@@ -34,7 +34,7 @@ type IACScanReport struct {
 	} `json:"response"`
 }
 
-func FetchVoilationFromInputFile(filePath *string) (map[string]int, error) {
+func FetchViolationFromInputFile(filePath *string) (map[string]int, error) {
 	var violationlist IACScanReport
 
 	data, err := os.ReadFile(*filePath)
@@ -64,7 +64,7 @@ func ProcessExpression(expression string) (string, map[string]int, error) {
 	}
 
 	var operator = ""
-	var userVoilationCount = make(map[string]int)
+	var userViolationCount = make(map[string]int)
 
 	for _, pair := range pairs {
 		parts := strings.Split(pair, ":")
@@ -79,7 +79,7 @@ func ProcessExpression(expression string) (string, map[string]int, error) {
 			continue
 		}
 
-		if _, ok := userVoilationCount[key]; ok {
+		if _, ok := userViolationCount[key]; ok {
 			return "", nil, fmt.Errorf("duplicate severity found: %v", key)
 		}
 
@@ -92,14 +92,14 @@ func ProcessExpression(expression string) (string, map[string]int, error) {
 			return "", nil, fmt.Errorf("validation expression can not have negative values")
 		}
 
-		userVoilationCount[key] = value
+		userViolationCount[key] = value
 	}
 
 	if operator == "" {
 		return "", nil, fmt.Errorf("no operator found in expression")
 	}
 
-	return operator, userVoilationCount, nil
+	return operator, userViolationCount, nil
 }
 
 func validateOperator(finalOperator, expressionOperator string) (string, error) {
@@ -115,12 +115,12 @@ func validateOperator(finalOperator, expressionOperator string) (string, error) 
 }
 
 func setDefault() (string, map[string]int, error) {
-	userVoilationCount := make(map[string]int)
-	userVoilationCount["CRITICAL"] = 1
-	userVoilationCount["HIGH"] = 1
-	userVoilationCount["MEDIUM"] = 1
-	userVoilationCount["LOW"] = 1
+	userViolationCount := make(map[string]int)
+	userViolationCount["CRITICAL"] = 1
+	userViolationCount["HIGH"] = 1
+	userViolationCount["MEDIUM"] = 1
+	userViolationCount["LOW"] = 1
 	operator := "OR"
 
-	return operator, userVoilationCount, nil
+	return operator, userViolationCount, nil
 }
