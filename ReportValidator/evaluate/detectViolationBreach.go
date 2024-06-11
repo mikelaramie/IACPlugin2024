@@ -20,7 +20,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/pritiprajapati314/IACPlugin2024/ReportValidator/fileoperator"
+	"github.com/mikelaramie/IACPlugin2024/ReportValidator/fileoperator"
 )
 
 func IsIACScanReportViolatingSeverity(filePath, expression *string) (bool, error) {
