@@ -22,7 +22,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/pritiprajapati314/IACPlugin2024/ReportValidator/evaluate"
+	"github.com/mikelaramie/IACPlugin2024/ReportValidator/evaluate"
 )
 
 var (
