@@ -22,12 +22,12 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
-func TestComputeVoliationState(t *testing.T) {
+func TestComputeViolationState(t *testing.T) {
 	tests := []struct {
 		name                              string
 		severityCounts                    map[string]int
-		userVoilationCount                map[string]int
-		expectedFailureCriteriaVoilations map[string]bool
+		userViolationCount                map[string]int
+		expectedFailureCriteriaViolations map[string]bool
 		wantErr                           bool
 	}{
 		{
@@ -38,12 +38,12 @@ func TestComputeVoliationState(t *testing.T) {
 				"MEDIUM":   0,
 				"LOW":      0,
 			},
-			userVoilationCount: map[string]int{
+			userViolationCount: map[string]int{
 				"CRITICAL": 1,
 				"HIGH":     1,
 				"MEDIUM":   0,
 			},
-			expectedFailureCriteriaVoilations: map[string]bool{
+			expectedFailureCriteriaViolations: map[string]bool{
 				"CRITICAL": true,
 				"HIGH":     true,
 				"MEDIUM":   false,
@@ -57,13 +57,13 @@ func TestComputeVoliationState(t *testing.T) {
 				"MEDIUM":   3,
 				"LOW":      2,
 			},
-			userVoilationCount: map[string]int{
+			userViolationCount: map[string]int{
 				"CRITICAL": 0,
 				"HIGH":     0,
 				"MEDIUM":   1,
 				"LOW":      1,
 			},
-			expectedFailureCriteriaVoilations: map[string]bool{
+			expectedFailureCriteriaViolations: map[string]bool{
 				"LOW":      true,
 				"MEDIUM":   true,
 				"HIGH":     false,
@@ -78,13 +78,13 @@ func TestComputeVoliationState(t *testing.T) {
 				"HIGH":     1,
 				"MEDIUM":   0,
 			},
-			userVoilationCount: map[string]int{
+			userViolationCount: map[string]int{
 				"CRITICAL": 1,
 				"HIGH":     2,
 				"MEDIUM":   1,
-				"invalid":      3,
+				"invalid":  3,
 			},
-			expectedFailureCriteriaVoilations: nil,
+			expectedFailureCriteriaViolations: nil,
 			wantErr:                           true,
 		},
 	}
@@ -93,13 +93,13 @@ func TestComputeVoliationState(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			failureCriteriaVoilations, err := computeVoliationState(test.severityCounts, test.userVoilationCount)
+			failureCriteriaViolations, err := computeViolationState(test.severityCounts, test.userViolationCount)
 			if (err != nil) != test.wantErr {
 				t.Errorf("Expected error: %v, got: %v", test.wantErr, err)
 			}
 
-			if diff := cmp.Diff(test.expectedFailureCriteriaVoilations, failureCriteriaVoilations); diff != "" {
-				t.Errorf("Expected failureCriteriaVoilations (+got, -want): %v", diff)
+			if diff := cmp.Diff(test.expectedFailureCriteriaViolations, failureCriteriaViolations); diff != "" {
+				t.Errorf("Expected failureCriteriaViolations (+got, -want): %v", diff)
 			}
 		})
 	}
@@ -109,14 +109,14 @@ func TestIsViolatingSeverity(t *testing.T) {
 	tests := []struct {
 		name                      string
 		operator                  string
-		failureCriteriaVoilations map[string]bool
+		failureCriteriaViolations map[string]bool
 		expectedBool              bool
 		wantErr                   bool
 	}{
 		{
 			name:     "ANDOperator_SeverityNotViolated",
 			operator: "AND",
-			failureCriteriaVoilations: map[string]bool{
+			failureCriteriaViolations: map[string]bool{
 				"MEDIUM": true,
 				"HIGH":   false,
 			},
@@ -126,7 +126,7 @@ func TestIsViolatingSeverity(t *testing.T) {
 		{
 			name:     "ANDOperator_SeverityViolated",
 			operator: "AND",
-			failureCriteriaVoilations: map[string]bool{
+			failureCriteriaViolations: map[string]bool{
 				"MEDIUM": true,
 				"HIGH":   true,
 			},
@@ -136,7 +136,7 @@ func TestIsViolatingSeverity(t *testing.T) {
 		{
 			name:     "OROperator_SeverityNotViolated",
 			operator: "OR",
-			failureCriteriaVoilations: map[string]bool{
+			failureCriteriaViolations: map[string]bool{
 				"key1": false,
 				"key2": false,
 			},
@@ -146,7 +146,7 @@ func TestIsViolatingSeverity(t *testing.T) {
 		{
 			name:     "OROperator_SeverityViolated",
 			operator: "OR",
-			failureCriteriaVoilations: map[string]bool{
+			failureCriteriaViolations: map[string]bool{
 				"key1": true,
 				"key2": false,
 			},
@@ -156,7 +156,7 @@ func TestIsViolatingSeverity(t *testing.T) {
 		{
 			name:                      "InvalidOperator_Failure",
 			operator:                  "RANDOM",
-			failureCriteriaVoilations: map[string]bool{},
+			failureCriteriaViolations: map[string]bool{},
 			expectedBool:              true,
 			wantErr:                   true,
 		},
@@ -166,7 +166,7 @@ func TestIsViolatingSeverity(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			isVoilated, err := isViolatingSeverity(test.operator, test.failureCriteriaVoilations)
+			isVoilated, err := isViolatingSeverity(test.operator, test.failureCriteriaViolations)
 			if (err != nil) != test.wantErr {
 				t.Errorf("Expected error: %v, got: %v", test.wantErr, err)
 			}

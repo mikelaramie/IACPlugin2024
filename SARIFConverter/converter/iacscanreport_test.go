@@ -89,7 +89,7 @@ func TestGetUniqueViolations(t *testing.T) {
 			input: []template.Violation{
 				{PolicyID: "policy1", Severity: "violation1"},
 				{PolicyID: "policy2", Severity: "violation2"},
-				{PolicyID: "policy1", Severity: "voilation1"},
+				{PolicyID: "policy1", Severity: "Violation1"},
 			},
 			expected: map[string]template.Violation{
 				"policy1": {PolicyID: "policy1", Severity: "violation1"},

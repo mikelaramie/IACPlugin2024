@@ -33,13 +33,13 @@ var (
 func main() {
 	flag.Parse()
 
-	isVoilated, err := evaluate.IsIACScanReportVoilatingSeverity(filePath, expression)
+	isViolated, err := evaluate.IsIACScanReportViolatingSeverity(filePath, expression)
 	if err != nil {
 		fmt.Printf("Failure occured during validation: %v", err)
-		os.Exit(1)
+		os.Exit(99)
 	}
 
-	if isVoilated {
+	if isViolated {
 		fmt.Printf("Validation Failed!")
 		os.Exit(1)
 	}
